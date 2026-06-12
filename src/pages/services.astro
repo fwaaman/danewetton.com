@@ -1,0 +1,110 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const services = [
+  {
+    title: 'Portrait',
+    description: 'Individual, couple, and family portraits. Studio or location.',
+  },
+  {
+    title: 'Editorial',
+    description: 'Magazine and brand editorial work. Creative direction available.',
+  },
+  {
+    title: 'Commercial',
+    description: 'Product, campaign, and advertising photography.',
+  },
+  {
+    title: 'Events',
+    description: 'Intimate gatherings to large-scale events, documented with care.',
+  },
+];
+---
+
+<Layout title="Services" description="Photography services offered by Dane Wetton">
+  <div class="page-heading">
+    <h1>Services</h1>
+    <p>Available for commission worldwide.</p>
+  </div>
+
+  <ul class="services-list">
+    {services.map((s, i) => (
+      <li class="service-item">
+        <span class="service-index">0{i + 1}</span>
+        <div class="service-body">
+          <h2>{s.title}</h2>
+          <p>{s.description}</p>
+        </div>
+      </li>
+    ))}
+  </ul>
+
+  <div class="cta">
+    <p>To discuss a project, <a href="/contact">get in touch</a>.</p>
+  </div>
+</Layout>
+
+<style>
+  .services-list {
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .service-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 3rem;
+    padding: 3rem clamp(1.5rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s ease;
+  }
+
+  .service-item:hover {
+    background: #f5f5f2;
+  }
+
+  .service-index {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--mid);
+    padding-top: 0.6rem;
+    flex-shrink: 0;
+    width: 2rem;
+  }
+
+  .service-body h2 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .service-body p {
+    font-size: 1rem;
+    color: var(--mid);
+    line-height: 1.7;
+    max-width: 48ch;
+  }
+
+  .cta {
+    padding: 4rem clamp(1.5rem, 5vw, 4rem);
+    font-size: 1.05rem;
+    color: var(--mid);
+  }
+
+  .cta a {
+    color: var(--black);
+    border-bottom: 1px solid var(--black);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .cta a:hover {
+    color: var(--mid);
+    border-color: var(--mid);
+  }
+</style>

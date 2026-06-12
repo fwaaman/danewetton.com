@@ -1,11 +1,226 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import { Image, getImage } from 'astro:assets';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// Auto-load every photo in src/assets/photos — just drop files in, no code changes needed.
+// Order follows filename, so prefix with 01_, 02_, etc. if you want to control the sequence.
+const modules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/photos/*.{jpg,jpeg,png,webp,avif}',
+  { eager: true }
+);
+
+const photos = Object.entries(modules)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, mod]) => mod.default);
+
+// Full-resolution WebP versions for the pop-out viewer (only fetched when a photo is opened).
+const fulls = await Promise.all(photos.map((p) => getImage({ src: p, format: 'webp' })));
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Dane Wetton" description="Photography portfolio of Dane Wetton">
+  {photos.length === 0 ? (
+    <section class="empty">
+      <p>Drop photos into <code>src/assets/photos/</code> to fill this gallery.</p>
+    </section>
+  ) : (
+    <section class="gallery">
+      {photos.map((photo, i) => (
+        <figure
+          class="photo"
+          data-full={fulls[i].src}
+          data-index={i}
+          role="button"
+          tabindex="0"
+          aria-label={`View photo ${i + 1} of ${photos.length}`}
+        >
+          <Image src={photo} alt="" widths={[400, 700, 1000]} sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw" loading={i < 4 ? 'eager' : 'lazy'} />
+        </figure>
+      ))}
+    </section>
+  )}
+
+  <!-- Pop-out viewer -->
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <button class="lb-close" aria-label="Close">Close</button>
+    <button class="lb-prev" aria-label="Previous photo">&larr;</button>
+    <img class="lb-img" src="" alt="" />
+    <button class="lb-next" aria-label="Next photo">&rarr;</button>
+    <div class="lb-counter"></div>
+  </div>
 </Layout>
+
+<script>
+  const lb = document.getElementById('lightbox');
+  if (lb) {
+    const img = lb.querySelector('.lb-img') as HTMLImageElement;
+    const counter = lb.querySelector('.lb-counter') as HTMLElement;
+    const figures = Array.from(document.querySelectorAll<HTMLElement>('.photo[data-full]'));
+    let idx = 0;
+
+    const show = (i: number) => {
+      idx = (i + figures.length) % figures.length;
+      img.src = figures[idx].dataset.full || '';
+      counter.textContent = `${idx + 1} / ${figures.length}`;
+    };
+
+    const open = (i: number) => {
+      show(i);
+      lb.classList.add('open');
+      lb.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+
+    const close = () => {
+      lb.classList.remove('open');
+      lb.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      img.src = '';
+    };
+
+    figures.forEach((f, i) => {
+      f.addEventListener('click', () => open(i));
+      f.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          open(i);
+        }
+      });
+    });
+
+    lb.querySelector('.lb-close')?.addEventListener('click', close);
+    lb.querySelector('.lb-prev')?.addEventListener('click', (e) => { e.stopPropagation(); show(idx - 1); });
+    lb.querySelector('.lb-next')?.addEventListener('click', (e) => { e.stopPropagation(); show(idx + 1); });
+    // Click the dark backdrop (but not the image itself) to close.
+    lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(idx - 1);
+      if (e.key === 'ArrowRight') show(idx + 1);
+    });
+  }
+</script>
+
+<style>
+  .empty {
+    padding: 2rem clamp(1.5rem, 5vw, 4rem) 6rem;
+    color: var(--mid);
+    font-style: italic;
+  }
+
+  .empty code {
+    font-family: ui-monospace, monospace;
+    font-size: 0.85em;
+    font-style: normal;
+  }
+
+  /* ── Gallery: masonry columns, photos keep their natural shape (no cropping) ── */
+  .gallery {
+    --gap: clamp(12px, 1.6vw, 24px);
+    column-count: 3;
+    column-gap: var(--gap);
+    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1.5rem, 4vw, 3.5rem) clamp(3rem, 6vw, 5rem);
+  }
+
+  .photo {
+    display: block;
+    width: 100%;
+    margin: 0 0 var(--gap);
+    break-inside: avoid;
+    overflow: hidden;
+    background: var(--border);
+    cursor: zoom-in;
+    padding: 0;
+    border: none;
+    outline-offset: 4px;
+  }
+
+  .photo :global(img) {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.6s ease;
+  }
+
+  .photo:hover :global(img) {
+    transform: scale(1.03);
+  }
+
+  @media (max-width: 1024px) {
+    .gallery { column-count: 2; }
+  }
+
+  @media (max-width: 600px) {
+    .gallery { column-count: 1; }
+  }
+
+  /* ── Pop-out viewer ── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(12, 12, 12, 0.96);
+    padding: clamp(1rem, 4vw, 3rem);
+  }
+
+  .lightbox.open {
+    display: flex;
+  }
+
+  .lb-img {
+    max-width: 90vw;
+    max-height: 88vh;
+    object-fit: contain;
+    cursor: default;
+  }
+
+  .lightbox button {
+    position: fixed;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.65);
+    font-family: var(--font-jp);
+    font-weight: 200;
+    letter-spacing: 0.18em;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 1rem;
+  }
+
+  .lightbox button:hover {
+    color: #fff;
+  }
+
+  .lb-close {
+    top: clamp(0.5rem, 2vw, 1.5rem);
+    right: clamp(0.5rem, 2vw, 1.5rem);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+  }
+
+  .lb-prev,
+  .lb-next {
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.6rem;
+  }
+
+  .lb-prev { left: clamp(0.25rem, 2vw, 1.5rem); }
+  .lb-next { right: clamp(0.25rem, 2vw, 1.5rem); }
+
+  .lb-counter {
+    position: fixed;
+    bottom: clamp(0.75rem, 2vw, 1.75rem);
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-jp);
+    font-weight: 200;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.6);
+  }
+</style>
