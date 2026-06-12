@@ -1,7 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
-import { Image } from 'astro:assets';
 
 export async function getStaticPaths() {
   const posts = await getCollection('journal');
@@ -30,7 +29,7 @@ const jsonLd = {
 };
 ---
 
-<Layout title={post.data.title} description={post.data.description}>
+<Layout title={post.data.title} description={post.data.description} ogImage={post.data.cover}>
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <article class="post">
@@ -47,7 +46,7 @@ const jsonLd = {
 
     {post.data.cover && (
       <div class="post-cover">
-        <Image src={post.data.cover} alt={post.data.coverAlt} widths={[600, 1000, 1600]} sizes="100vw" />
+        <img src={post.data.cover} alt={post.data.coverAlt} />
       </div>
     )}
 

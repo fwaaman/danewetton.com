@@ -4,7 +4,7 @@ description: "A long-term review of the Fujifilm X100VI for street and travel ph
 date: 2026-06-10
 tags: ["camera review", "fujifilm", "street photography"]
 draft: false
-# cover: ./fujifilm-x100vi-review/cover.jpg
+# cover: /journal-media/x100vi-cover.jpg
 # coverAlt: "Fujifilm X100VI resting on a wooden table"
 ---
 
