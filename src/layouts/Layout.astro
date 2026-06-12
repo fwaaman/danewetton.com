@@ -43,7 +43,7 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
   </head>
   <body>
     <!-- Logo placeholder, top centre. Replace the <a> contents with an <img src="/logo.svg" alt="Dane Wetton" /> when you have artwork. -->
-    <header>
+    <header class="site-header">
       <a href="/" class="logo" aria-label="Dane Wetton — home">
         <span class="logo-placeholder">LOGO</span>
       </a>
@@ -115,8 +115,9 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
     max-width: 100%;
   }
 
-  /* ── Logo bar (top centre) ── */
-  header {
+  /* ── Logo bar (top centre) — scoped to the site bar only, so nested
+     <header> elements (e.g. on blog posts) aren't affected ── */
+  .site-header {
     position: fixed;
     top: 0;
     left: 0;
