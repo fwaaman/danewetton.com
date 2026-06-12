@@ -1,0 +1,52 @@
+# Sveltia CMS configuration — the editor at /admin.
+# Docs: https://github.com/sveltia/sveltia-cms
+
+backend:
+  name: github
+  repo: fwaaman/danewetton.com
+  branch: main
+  # base_url is your Cloudflare auth Worker's URL. Fill this in after deploying the worker.
+  base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev
+
+# Where uploaded images are stored, and the public path they're served from.
+media_folder: public/journal-media
+public_folder: /journal-media
+
+collections:
+  - name: journal
+    label: Journal Posts
+    label_singular: Journal Post
+    folder: src/content/journal
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    summary: '{{title}}'
+    sortable_fields: [date, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - {
+          name: description,
+          label: SEO description,
+          widget: text,
+          hint: 'Shown in Google results and link previews (~150 characters).',
+        }
+      - {
+          name: date,
+          label: Date,
+          widget: datetime,
+          date_format: 'YYYY-MM-DD',
+          time_format: false,
+          picker_utc: true,
+        }
+      - {
+          name: cover,
+          label: Cover image,
+          widget: image,
+          required: false,
+          hint: 'Optional. Used as the thumbnail and social-share preview.',
+        }
+      - { name: coverAlt, label: Cover image — alt text, widget: string, required: false }
+      - { name: tags, label: Tags, widget: list, required: false }
+      - { name: draft, label: 'Draft (hide from the live site)', widget: boolean, default: false }
+      - { name: body, label: Post, widget: markdown }
