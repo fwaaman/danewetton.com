@@ -51,7 +51,6 @@ const ogImageUrl = new URL(ogImage, Astro.site).href;
 
       <nav class="side-nav">
         <a href="/" class:list={[{ active: currentPath === '/' }]}>Work</a>
-        <a href="/services" class:list={[{ active: currentPath.startsWith('/services') }]}>Services</a>
         <a href="/journal" class:list={[{ active: currentPath.startsWith('/journal') }]}>Journal</a>
         <a href="/contact" class:list={[{ active: currentPath.startsWith('/contact') }]}>Contact</a>
       </nav>
