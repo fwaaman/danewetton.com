@@ -5,7 +5,6 @@ import Layout from '../layouts/Layout.astro';
 <Layout title="Contact" description="Get in touch with Dane Wetton">
   <div class="page-heading">
     <h1>Contact</h1>
-    <p>For commissions, licensing, or general enquiries.</p>
   </div>
 
   <div class="contact-wrap">
@@ -52,10 +51,6 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </div>
 
-    <aside class="contact-meta">
-      <p class="meta-label">Response time</p>
-      <p>Within 48 hours</p>
-    </aside>
   </div>
 </Layout>
 
@@ -101,17 +96,8 @@ import Layout from '../layouts/Layout.astro';
 
 <style>
   .contact-wrap {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
     padding: 4rem clamp(1.5rem, 5vw, 4rem) 6rem;
-    align-items: start;
-  }
-
-  @media (max-width: 768px) {
-    .contact-wrap {
-      grid-template-columns: 1fr;
-    }
+    max-width: 600px;
   }
 
   .contact-form {
@@ -223,22 +209,4 @@ import Layout from '../layouts/Layout.astro';
     max-width: 40ch;
   }
 
-  .contact-meta {
-    padding-top: 0.4rem;
-  }
-
-  .meta-label {
-    font-family: var(--font-sans);
-    font-weight: 500;
-    font-size: 0.66rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--mid);
-    margin-bottom: 0.5rem;
-  }
-
-  .contact-meta p:last-child {
-    font-size: 1rem;
-    color: var(--mid);
-  }
 </style>
