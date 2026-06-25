@@ -12,7 +12,18 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "latest",
     "@astrojs/sitemap": "^3.7.3",
-    "astro": "^6.4.6"
+    "@sanity/astro": "latest",
+    "@sanity/client": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@types/react-is": "latest",
+    "astro": "^6.4.6",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-is": "latest",
+    "sanity": "latest",
+    "styled-components": "latest"
   }
 }
