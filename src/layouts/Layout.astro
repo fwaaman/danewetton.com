@@ -2,7 +2,7 @@
 interface Props {
   title?: string;
   description?: string;
-  ogImage?: string;
+  ogImage?: string | null;
 }
 const { title = 'Dane Wetton', description = 'Photography', ogImage = '/og-default.jpg' } = Astro.props;
 const currentPath = Astro.url.pathname;
@@ -10,7 +10,8 @@ const currentPath = Astro.url.pathname;
 const fullTitle = title === 'Dane Wetton' ? 'Dane Wetton — Photography' : `${title} — Dane Wetton`;
 // Absolute URLs are required for canonical + social tags. Astro.site comes from astro.config.
 const canonical = new URL(currentPath, Astro.site).href;
-const ogImageUrl = new URL(ogImage, Astro.site).href;
+const cleanOgImage = ogImage?.trim() || '/og-default.jpg';
+const ogImageUrl = new URL(cleanOgImage, Astro.site).href;
 ---
 
 <!doctype html>
