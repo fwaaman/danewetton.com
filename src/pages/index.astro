@@ -1,6 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { Image, getImage } from 'astro:assets';
+import { getHomepageGallery } from '../lib/sanity';
+
+const sanityPhotos = await getHomepageGallery();
 
 // Auto-load every photo in src/assets/photos — just drop files in, no code changes needed.
 // Order follows filename, so prefix with 01_, 02_, etc. if you want to control the sequence.
@@ -15,12 +18,35 @@ const photos = Object.entries(modules)
 
 // Full-resolution WebP versions for the pop-out viewer (only fetched when a photo is opened).
 const fulls = await Promise.all(photos.map((p) => getImage({ src: p, format: 'webp' })));
+const hasSanityPhotos = sanityPhotos.length > 0;
 ---
 
 <Layout title="Dane Wetton" description="Photography portfolio of Dane Wetton">
-  {photos.length === 0 ? (
+  {hasSanityPhotos ? (
+    <section class="gallery">
+      {sanityPhotos.map((photo, i) => (
+        <figure
+          class="photo"
+          data-full={photo.fullSrc}
+          data-index={i}
+          role="button"
+          tabindex="0"
+          aria-label={`View photo ${i + 1} of ${sanityPhotos.length}`}
+        >
+          <img
+            src={photo.src}
+            alt={photo.alt}
+            loading={i < 4 ? 'eager' : 'lazy'}
+            width={photo.width}
+            height={photo.height}
+          />
+          {photo.caption && <figcaption>{photo.caption}</figcaption>}
+        </figure>
+      ))}
+    </section>
+  ) : photos.length === 0 ? (
     <section class="empty">
-      <p>Drop photos into <code>src/assets/photos/</code> to fill this gallery.</p>
+      <p>Add photos in Sanity or drop files into <code>src/assets/photos/</code> to fill this gallery.</p>
     </section>
   ) : (
     <section class="gallery">
@@ -145,6 +171,15 @@ const fulls = await Promise.all(photos.map((p) => getImage({ src: p, format: 'we
 
   .photo:hover :global(img) {
     transform: scale(1.03);
+  }
+
+  .photo figcaption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 
   @media (max-width: 1024px) {
