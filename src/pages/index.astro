@@ -1,37 +1,23 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { Image, getImage } from 'astro:assets';
-import { getHomepageGallery } from '../lib/contentful';
+import { getHomepageGallery } from '../lib/sanity';
 
-const cmsPhotos = await getHomepageGallery();
-
-// Auto-load every photo in src/assets/photos — just drop files in, no code changes needed.
-// Order follows filename, so prefix with 01_, 02_, etc. if you want to control the sequence.
-const modules = import.meta.glob<{ default: ImageMetadata }>(
-  '../assets/photos/*.{jpg,jpeg,png,webp,avif}',
-  { eager: true }
-);
-
-const photos = Object.entries(modules)
-  .sort(([a], [b]) => a.localeCompare(b))
-  .map(([, mod]) => mod.default);
-
-// Full-resolution WebP versions for the pop-out viewer (only fetched when a photo is opened).
-const fulls = await Promise.all(photos.map((p) => getImage({ src: p, format: 'webp' })));
-const hasCmsPhotos = cmsPhotos.length > 0;
+// Photos are managed in Sanity (Home Gallery → images, in order). When there are
+// none, the gallery simply renders empty.
+const photos = await getHomepageGallery();
 ---
 
 <Layout title="Dane Wetton" description="Photography portfolio of Dane Wetton">
-  {hasCmsPhotos ? (
+  {photos.length > 0 && (
     <section class="gallery">
-      {cmsPhotos.map((photo, i) => (
+      {photos.map((photo, i) => (
         <figure
           class="photo"
           data-full={photo.fullSrc}
           data-index={i}
           role="button"
           tabindex="0"
-          aria-label={`View photo ${i + 1} of ${cmsPhotos.length}`}
+          aria-label={`View photo ${i + 1} of ${photos.length}`}
         >
           <img
             src={photo.src}
@@ -41,25 +27,6 @@ const hasCmsPhotos = cmsPhotos.length > 0;
             height={photo.height}
           />
           {photo.caption && <figcaption>{photo.caption}</figcaption>}
-        </figure>
-      ))}
-    </section>
-  ) : photos.length === 0 ? (
-    <section class="empty">
-      <p>Add photos in Contentful or drop files into <code>src/assets/photos/</code> to fill this gallery.</p>
-    </section>
-  ) : (
-    <section class="gallery">
-      {photos.map((photo, i) => (
-        <figure
-          class="photo"
-          data-full={fulls[i].src}
-          data-index={i}
-          role="button"
-          tabindex="0"
-          aria-label={`View photo ${i + 1} of ${photos.length}`}
-        >
-          <Image src={photo} alt="" widths={[400, 700, 1000]} sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw" loading={i < 4 ? 'eager' : 'lazy'} />
         </figure>
       ))}
     </section>
@@ -129,18 +96,6 @@ const hasCmsPhotos = cmsPhotos.length > 0;
 </script>
 
 <style>
-  .empty {
-    padding: 2rem clamp(1.5rem, 5vw, 4rem) 6rem;
-    color: var(--mid);
-    font-style: italic;
-  }
-
-  .empty code {
-    font-family: ui-monospace, monospace;
-    font-size: 0.85em;
-    font-style: normal;
-  }
-
   /* ── Gallery: masonry columns, photos keep their natural shape (no cropping) ── */
   .gallery {
     --gap: clamp(12px, 1.6vw, 24px);

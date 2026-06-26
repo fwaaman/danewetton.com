@@ -13,51 +13,34 @@ npm run preview
 
 ## Content
 
-- Portfolio images live in `src/assets/photos/`.
-- If Contentful has `Gallery Photo` entries marked visible, the homepage uses those instead.
-- Journal posts live in `src/content/journal/`.
-- Set `draft: true` on a journal post to keep it out of the build.
-- Future-dated journal posts are also excluded from the build.
-- CMS-uploaded journal media is stored in `public/journal-media/`.
+Content is managed in [Sanity](https://www.sanity.io/manage) — a hosted editor you log
+into from any device. Both the homepage gallery and the journal are read from Sanity at
+build time, so publishing in Sanity (and triggering a rebuild) updates the live site.
 
-## Contentful
-
-Content is managed in [Contentful](https://app.contentful.com) (hosted — there is no
-editor to run locally). The homepage gallery reads published `Gallery Photo` entries
-through the Content Delivery API at build time.
+- The homepage gallery reads the **Home Gallery** document (its `images` array, in order).
+- Journal posts are **Journal Post** documents.
+- A post is hidden until you **Publish** it in Sanity; future-dated posts stay hidden
+  until their date arrives.
+- The homepage falls back to local files in `src/assets/photos/` whenever the Sanity
+  gallery is empty (or the env vars are missing), so it never renders blank.
 
 ### Content model
 
-The homepage reads the `Gallery` content type (API identifier `gallery`), which has a
-single field:
+Two document types (defined in Sanity, project `ovqshb4n`):
 
-- `image` — Media, **many files** (an ordered list of image assets)
-
-For each image asset, the **title** becomes the alt text and the **description** (if
-set) becomes the caption. Photos appear in the order they sit in the `image` array.
-
-To publish photos:
-
-1. Create (or edit) a `Gallery` entry and add images to the `image` field.
-2. Set each asset's **title** (alt text) — and optionally its description (caption).
-3. **Publish** both the assets and the `Gallery` entry. The Delivery API only returns
-   published content.
-
-API credentials live under **Settings → API keys** (the Space ID and the Content
-Delivery API access token).
+- **Home Gallery** — an ordered `images` array; each image has optional `alt` and
+  `caption`. Drag to reorder.
+- **Journal Post** — `title`, `slug`, `date`, `excerpt`, optional `coverImage`, rich-text
+  `body`, and `tags`.
 
 ### Environment variables
 
-Copy `.env.example` to `.env` and fill in:
+Copy `.env.example` to `.env` and fill in (neither value is secret — the dataset is public):
 
-- `CONTENTFUL_SPACE_ID`
-- `CONTENTFUL_DELIVERY_TOKEN`
-- `CONTENTFUL_ENVIRONMENT` (defaults to `master`)
+- `PUBLIC_SANITY_PROJECT_ID`
+- `PUBLIC_SANITY_DATASET` (defaults to `production`)
 
 Set the same variables in Cloudflare Pages for production builds.
-
-The homepage falls back to local files in `src/assets/photos/` until Contentful has
-visible gallery entries (or if the variables are missing).
 
 ## Deployment
 
@@ -67,3 +50,14 @@ The site is configured for Cloudflare Pages:
 - Output directory: `dist`
 - Cloudflare Pages config: `wrangler.toml`
 - Static headers: `public/_headers`
+
+### Auto-rebuild on publish
+
+The site is static, so it must rebuild to pick up Sanity edits. Wire that up once:
+
+1. In Cloudflare Pages → the project → **Settings → Builds & deployments → Deploy hooks**,
+   create a hook (e.g. "Sanity publish") and copy its URL.
+2. In [Sanity Manage](https://www.sanity.io/manage) → project `ovqshb4n` → **API → Webhooks**,
+   add a webhook pointing at that URL (method `POST`, dataset `production`).
+
+After this, hitting **Publish** in Sanity triggers a fresh deploy automatically.
