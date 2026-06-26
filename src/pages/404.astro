@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page not found" description="The page you're looking for doesn't exist.">
+  <section class="page-heading">
+    <h1>404</h1>
+    <p>This page doesn't exist or has moved. Head back to the work, or browse the journal.</p>
+  </section>
+
+  <nav class="notfound-links">
+    <a href="/">View work</a>
+    <a href="/journal">Read the journal</a>
+  </nav>
+</Layout>
+
+<style>
+  .notfound-links {
+    display: flex;
+    gap: 2rem;
+    padding: 2.5rem clamp(1.5rem, 5vw, 4rem) 6rem;
+  }
+
+  .notfound-links a {
+    font-weight: 500;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mid);
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .notfound-links a:hover {
+    color: var(--black);
+    border-color: var(--black);
+  }
+</style>
