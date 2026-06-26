@@ -14,46 +14,50 @@ npm run preview
 ## Content
 
 - Portfolio images live in `src/assets/photos/`.
-- If Sanity has a `homepageGallery` document with visible photos, the homepage uses that curated order instead.
+- If Contentful has `Gallery Photo` entries marked visible, the homepage uses those instead.
 - Journal posts live in `src/content/journal/`.
 - Set `draft: true` on a journal post to keep it out of the build.
 - Future-dated journal posts are also excluded from the build.
 - CMS-uploaded journal media is stored in `public/journal-media/`.
 
-## Sanity
+## Contentful
 
-Sanity Studio is embedded at `/studio`.
+Content is managed in [Contentful](https://app.contentful.com) (hosted — there is no
+editor to run locally). The homepage gallery reads published `Gallery Photo` entries
+through the Content Delivery API at build time.
 
-Default build values:
+### Content model
 
-- Project ID: `ovqshb4n`
-- Dataset: `danewetton`
+The homepage reads the `Gallery` content type (API identifier `gallery`), which has a
+single field:
 
-For production, set these in Cloudflare Pages if they change:
+- `image` — Media, **many files** (an ordered list of image assets)
 
-- `SANITY_PROJECT_ID`
-- `SANITY_DATASET`
-- `SANITY_API_VERSION`
+For each image asset, the **title** becomes the alt text and the **description** (if
+set) becomes the caption. Photos appear in the order they sit in the `image` array.
 
-In Studio, create a `Homepage Gallery` document with a `photos` array. Each item should have:
+To publish photos:
 
-- `image`
-- `alt`
-- `caption` optional
-- `visible` boolean
+1. Create (or edit) a `Gallery` entry and add images to the `image` field.
+2. Set each asset's **title** (alt text) — and optionally its description (caption).
+3. **Publish** both the assets and the `Gallery` entry. The Delivery API only returns
+   published content.
 
-The homepage falls back to local files in `src/assets/photos/` until Sanity has visible gallery images.
+API credentials live under **Settings → API keys** (the Space ID and the Content
+Delivery API access token).
 
-Sanity dependencies are listed in `package.json`. If they are not installed yet, run:
+### Environment variables
 
-```sh
-npm install
-```
+Copy `.env.example` to `.env` and fill in:
 
-After the Studio first opens, Sanity may ask to add CORS origins. Add authenticated origins for:
+- `CONTENTFUL_SPACE_ID`
+- `CONTENTFUL_DELIVERY_TOKEN`
+- `CONTENTFUL_ENVIRONMENT` (defaults to `master`)
 
-- `http://localhost:4321`
-- `https://danewetton.com`
+Set the same variables in Cloudflare Pages for production builds.
+
+The homepage falls back to local files in `src/assets/photos/` until Contentful has
+visible gallery entries (or if the variables are missing).
 
 ## Deployment
 
@@ -63,9 +67,3 @@ The site is configured for Cloudflare Pages:
 - Output directory: `dist`
 - Cloudflare Pages config: `wrangler.toml`
 - Static headers: `public/_headers`
-
-## CMS
-
-The editor is served at `/admin` using Sveltia CMS. Before using it in production,
-replace the placeholder `base_url` in `public/admin/config.yml` with the deployed
-Cloudflare auth Worker URL for GitHub authentication.

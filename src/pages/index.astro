@@ -1,9 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { Image, getImage } from 'astro:assets';
-import { getHomepageGallery } from '../lib/sanity';
+import { getHomepageGallery } from '../lib/contentful';
 
-const sanityPhotos = await getHomepageGallery();
+const cmsPhotos = await getHomepageGallery();
 
 // Auto-load every photo in src/assets/photos — just drop files in, no code changes needed.
 // Order follows filename, so prefix with 01_, 02_, etc. if you want to control the sequence.
@@ -18,20 +18,20 @@ const photos = Object.entries(modules)
 
 // Full-resolution WebP versions for the pop-out viewer (only fetched when a photo is opened).
 const fulls = await Promise.all(photos.map((p) => getImage({ src: p, format: 'webp' })));
-const hasSanityPhotos = sanityPhotos.length > 0;
+const hasCmsPhotos = cmsPhotos.length > 0;
 ---
 
 <Layout title="Dane Wetton" description="Photography portfolio of Dane Wetton">
-  {hasSanityPhotos ? (
+  {hasCmsPhotos ? (
     <section class="gallery">
-      {sanityPhotos.map((photo, i) => (
+      {cmsPhotos.map((photo, i) => (
         <figure
           class="photo"
           data-full={photo.fullSrc}
           data-index={i}
           role="button"
           tabindex="0"
-          aria-label={`View photo ${i + 1} of ${sanityPhotos.length}`}
+          aria-label={`View photo ${i + 1} of ${cmsPhotos.length}`}
         >
           <img
             src={photo.src}
@@ -46,7 +46,7 @@ const hasSanityPhotos = sanityPhotos.length > 0;
     </section>
   ) : photos.length === 0 ? (
     <section class="empty">
-      <p>Add photos in Sanity or drop files into <code>src/assets/photos/</code> to fill this gallery.</p>
+      <p>Add photos in Contentful or drop files into <code>src/assets/photos/</code> to fill this gallery.</p>
     </section>
   ) : (
     <section class="gallery">
