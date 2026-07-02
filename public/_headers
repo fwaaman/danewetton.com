@@ -3,13 +3,7 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
-/photos/*
-  Cache-Control: public, max-age=31536000, immutable
-
 /_astro/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/journal-media/*
   Cache-Control: public, max-age=31536000, immutable
 
 /og-default.jpg

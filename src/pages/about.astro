@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+
+const entries = await getCollection('about');
+const entry = entries[0];
+const { Content } = await render(entry);
+---
+
+<Layout title="About" description="About Dane Wetton">
+  <div class="page-heading">
+    <h1>About</h1>
+  </div>
+
+  <div class="about-wrap">
+    {entry.data.portrait && (
+      <div class="portrait">
+        <Image src={entry.data.portrait} alt={entry.data.portraitAlt || ''} widths={[400, 800]} sizes="(max-width: 768px) 100vw, 400px" />
+      </div>
+    )}
+    <div class="prose">
+      <Content />
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .about-wrap {
+    display: flex;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: flex-start;
+    padding: 4rem clamp(1.5rem, 5vw, 4rem) 6rem;
+  }
+
+  .portrait {
+    flex: 0 0 clamp(200px, 28vw, 360px);
+    overflow: hidden;
+    background: var(--border);
+  }
+
+  .portrait :global(img) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .prose {
+    flex: 1;
+    max-width: 60ch;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #1a1a1a;
+  }
+
+  .prose :global(p) {
+    margin: 0 0 1.4rem;
+  }
+
+  .prose :global(a) {
+    color: var(--black);
+    border-bottom: 1px solid var(--black);
+  }
+
+  @media (max-width: 768px) {
+    .about-wrap {
+      flex-direction: column;
+    }
+    .portrait {
+      flex-basis: auto;
+      width: 100%;
+      max-width: 320px;
+    }
+  }
+</style>

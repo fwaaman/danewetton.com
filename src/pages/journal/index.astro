@@ -1,12 +1,25 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getJournalPosts } from '../../lib/sanity';
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 
-// Published posts only, newest first, future-dated posts hidden — all handled in the query.
-const posts = await getJournalPosts();
+// Published posts only (no future-dated posts), newest first.
+const now = new Date();
+const entries = (await getCollection('journal', (e) => e.data.date <= now)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
 
-const fmtDate = (d: string) =>
-  new Date(d).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+const posts = await Promise.all(
+  entries.map(async (entry) => ({
+    ...entry,
+    coverSrc: entry.data.coverImage
+      ? (await getImage({ src: entry.data.coverImage, width: 600 })).src
+      : undefined,
+  }))
+);
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
 <Layout title="Journal" description="Photography journal, camera reviews, and field notes by Dane Wetton.">
@@ -23,19 +36,19 @@ const fmtDate = (d: string) =>
     <ul class="post-list">
       {posts.map((post) => (
         <li>
-          <a href={`/journal/${post.slug}/`} class="post-link">
+          <a href={`/journal/${post.id}/`} class="post-link">
             {post.coverSrc && (
               <div class="post-thumb">
-                <img src={post.coverSrc} alt={post.coverAlt} loading="lazy" />
+                <img src={post.coverSrc} alt={post.data.coverAlt || ''} loading="lazy" />
               </div>
             )}
             <div class="post-text">
-              <time datetime={post.date}>{fmtDate(post.date)}</time>
-              <h2>{post.title}</h2>
-              <p>{post.excerpt}</p>
-              {post.tags.length > 0 && (
+              <time datetime={post.data.date.toISOString()}>{fmtDate(post.data.date)}</time>
+              <h2>{post.data.title}</h2>
+              <p>{post.data.excerpt}</p>
+              {post.data.tags.length > 0 && (
                 <div class="post-tags">
-                  {post.tags.map((t) => <span class="tag">{t}</span>)}
+                  {post.data.tags.map((t) => <span class="tag">{t}</span>)}
                 </div>
               )}
             </div>

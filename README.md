@@ -1,6 +1,6 @@
 # danewetton.com
 
-Astro portfolio and journal site for Dane Wetton.
+Astro photography portfolio and journal for Dane Wetton.
 
 ## Commands
 
@@ -13,34 +13,54 @@ npm run preview
 
 ## Content
 
-Content is managed in [Sanity](https://www.sanity.io/manage) — a hosted editor you log
-into from any device. Both the homepage gallery and the journal are read from Sanity at
-build time, so publishing in Sanity (and triggering a rebuild) updates the live site.
+All content lives in this repo as files — there's no external CMS account or API
+key. Edit it in two ways:
 
-- The homepage gallery reads the **Home Gallery** document (its `images` array, in order).
-- Journal posts are **Journal Post** documents.
-- A post is hidden until you **Publish** it in Sanity; future-dated posts stay hidden
-  until their date arrives.
-- The homepage falls back to local files in `src/assets/photos/` whenever the Sanity
-  gallery is empty (or the env vars are missing), so it never renders blank.
+1. **Directly**, by editing the files under `src/content/` and `src/assets/` and
+   committing/pushing as usual.
+2. **Through the CMS UI** at `/admin` (Decap CMS) — a form-based editor that commits
+   changes to this repo on your behalf, which triggers a rebuild the same as any
+   other push. Requires the one-time setup below before it can log you in.
 
 ### Content model
 
-Two document types (defined in Sanity, project `ovqshb4n`):
+- **Home** (`src/content/home/home.json`) — the homepage hero image.
+- **Portfolio Gallery** (`src/content/gallery/gallery.json`) — the ordered list of
+  photos on `/portfolio`. Each entry: `id` (controls order), `image`, `alt`,
+  optional `caption`.
+- **Journal** (`src/content/journal/*.md`) — one markdown file per post: `title`,
+  `date`, `excerpt` (≤200 chars), optional `coverImage`/`coverAlt`, `tags`, and a
+  markdown body. A post with a future `date` stays hidden until that date arrives.
+- **About** (`src/content/about/about.md`) — `title`, optional `portrait`/
+  `portraitAlt`, and a markdown bio.
 
-- **Home Gallery** — an ordered `images` array; each image has optional `alt` and
-  `caption`. Drag to reorder.
-- **Journal Post** — `title`, `slug`, `date`, `excerpt`, optional `coverImage`, rich-text
-  `body`, and `tags`.
+Images referenced by content files live under `src/assets/{gallery,journal,home,about}/`
+so Astro can optimize them at build time.
 
-### Environment variables
+## Setting up the CMS login (one-time)
 
-Copy `.env.example` to `.env` and fill in (neither value is secret — the dataset is public):
+Decap CMS's GitHub login needs an OAuth token exchange, which needs a small server.
+Rather than run one ourselves, this uses a **free Netlify project purely for that
+login step** — the real site keeps deploying via Cloudflare Pages as it always has;
+Netlify never serves any actual content.
 
-- `PUBLIC_SANITY_PROJECT_ID`
-- `PUBLIC_SANITY_DATASET` (defaults to `production`)
+1. **Create a GitHub OAuth App**: github.com/settings/developers → "New OAuth App".
+   - Homepage URL: `https://danewetton.com`
+   - Authorization callback URL: `https://<your-netlify-site>.netlify.app/callback`
+     (you'll get the Netlify URL in the next step — come back and fill this in after)
+   - Save the generated **Client ID** and **Client Secret**.
+2. **Create a free Netlify site**: app.netlify.com → "Add new site" → you can deploy
+   an empty/placeholder repo, or even drag-and-drop an empty folder — it just needs
+   to exist so it has a `*.netlify.app` URL.
+3. In that Netlify site: **Site configuration → Access control → OAuth** → install
+   provider → **GitHub**, and paste in the Client ID/Secret from step 1.
+4. Go back to the GitHub OAuth App and set the callback URL to
+   `https://<your-netlify-site>.netlify.app/callback`.
+5. Edit `public/admin/config.yml` in this repo and replace `base_url:
+   https://REPLACE-ME.netlify.app` with your actual Netlify site URL, then commit.
 
-Set the same variables in Cloudflare Pages for production builds.
+After that, visiting `https://danewetton.com/admin` and clicking "Login with GitHub"
+will work.
 
 ## Deployment
 
@@ -51,13 +71,5 @@ The site is configured for Cloudflare Pages:
 - Cloudflare Pages config: `wrangler.toml`
 - Static headers: `public/_headers`
 
-### Auto-rebuild on publish
-
-The site is static, so it must rebuild to pick up Sanity edits. Wire that up once:
-
-1. In Cloudflare Pages → the project → **Settings → Builds & deployments → Deploy hooks**,
-   create a hook (e.g. "Sanity publish") and copy its URL.
-2. In [Sanity Manage](https://www.sanity.io/manage) → project `ovqshb4n` → **API → Webhooks**,
-   add a webhook pointing at that URL (method `POST`, dataset `production`).
-
-After this, hitting **Publish** in Sanity triggers a fresh deploy automatically.
+Pushing to `main` on GitHub triggers a Cloudflare Pages build automatically (Git
+integration, already connected — no local `wrangler` auth needed).

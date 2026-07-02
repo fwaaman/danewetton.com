@@ -6,6 +6,8 @@ dist/
 
 # dependencies
 node_modules/
+# no lockfile committed on purpose — Cloudflare does a clean npm install
+package-lock.json
 
 # logs
 npm-debug.log*

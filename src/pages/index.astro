@@ -1,216 +1,87 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getHomepageGallery } from '../lib/sanity';
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 
-// Photos are managed in Sanity (Home Gallery → images, in order). When there are
-// none, the gallery simply renders empty.
-const photos = await getHomepageGallery();
+const homeEntries = await getCollection('home');
+const home = homeEntries[0]?.data;
 ---
 
 <Layout title="Dane Wetton" description="Photography portfolio of Dane Wetton">
-  {photos.length > 0 && (
-    <section class="gallery">
-      {photos.map((photo, i) => (
-        <figure
-          class="photo"
-          data-full={photo.fullSrc}
-          data-index={i}
-          role="button"
-          tabindex="0"
-          aria-label={`View photo ${i + 1} of ${photos.length}`}
-        >
-          <img
-            src={photo.src}
-            alt={photo.alt}
-            loading={i < 4 ? 'eager' : 'lazy'}
-            width={photo.width}
-            height={photo.height}
-          />
-          {photo.caption && <figcaption>{photo.caption}</figcaption>}
-        </figure>
-      ))}
-    </section>
-  )}
-
-  <!-- Pop-out viewer -->
-  <div id="lightbox" class="lightbox" aria-hidden="true">
-    <button class="lb-close" aria-label="Close">Close</button>
-    <button class="lb-prev" aria-label="Previous photo">&larr;</button>
-    <img class="lb-img" src="" alt="" />
-    <button class="lb-next" aria-label="Next photo">&rarr;</button>
-    <div class="lb-counter"></div>
-  </div>
+  <a href="/portfolio" class="hero" aria-label="View the portfolio">
+    {home?.heroImage ? (
+      <Image src={home.heroImage} alt={home.heroAlt || ''} class="hero-img" widths={[640, 1024, 1600, 2400]} sizes="100vw" priority />
+    ) : (
+      <div class="hero-placeholder">
+        <p>TODO: add a hero photo from <code>/admin</code> (Home collection).</p>
+      </div>
+    )}
+    <span class="hero-cta">View Portfolio</span>
+  </a>
 </Layout>
 
-<script>
-  const lb = document.getElementById('lightbox');
-  if (lb) {
-    const img = lb.querySelector('.lb-img') as HTMLImageElement;
-    const counter = lb.querySelector('.lb-counter') as HTMLElement;
-    const figures = Array.from(document.querySelectorAll<HTMLElement>('.photo[data-full]'));
-    let idx = 0;
-
-    const show = (i: number) => {
-      idx = (i + figures.length) % figures.length;
-      img.src = figures[idx].dataset.full || '';
-      counter.textContent = `${idx + 1} / ${figures.length}`;
-    };
-
-    const open = (i: number) => {
-      show(i);
-      lb.classList.add('open');
-      lb.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-    };
-
-    const close = () => {
-      lb.classList.remove('open');
-      lb.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = '';
-      img.src = '';
-    };
-
-    figures.forEach((f, i) => {
-      f.addEventListener('click', () => open(i));
-      f.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          open(i);
-        }
-      });
-    });
-
-    lb.querySelector('.lb-close')?.addEventListener('click', close);
-    lb.querySelector('.lb-prev')?.addEventListener('click', (e) => { e.stopPropagation(); show(idx - 1); });
-    lb.querySelector('.lb-next')?.addEventListener('click', (e) => { e.stopPropagation(); show(idx + 1); });
-    // Click the dark backdrop (but not the image itself) to close.
-    lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
-
-    document.addEventListener('keydown', (e) => {
-      if (!lb.classList.contains('open')) return;
-      if (e.key === 'Escape') close();
-      if (e.key === 'ArrowLeft') show(idx - 1);
-      if (e.key === 'ArrowRight') show(idx + 1);
-    });
-  }
-</script>
-
 <style>
-  /* ── Gallery: masonry columns, photos keep their natural shape (no cropping) ── */
-  .gallery {
-    --gap: clamp(12px, 1.6vw, 24px);
-    column-count: 3;
-    column-gap: var(--gap);
-    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1.5rem, 4vw, 3.5rem) clamp(3rem, 6vw, 5rem);
-  }
-
-  .photo {
+  .hero {
+    position: relative;
     display: block;
     width: 100%;
-    margin: 0 0 var(--gap);
-    break-inside: avoid;
+    height: calc(100dvh - 1px);
     overflow: hidden;
     background: var(--border);
-    cursor: zoom-in;
-    padding: 0;
-    border: none;
-    outline-offset: 4px;
   }
 
-  .photo :global(img) {
+  .hero-img {
     width: 100%;
-    height: auto;
-    display: block;
-    transition: transform 0.6s ease;
+    height: 100%;
+    object-fit: cover;
   }
 
-  .photo:hover :global(img) {
-    transform: scale(1.03);
-  }
-
-  .photo figcaption {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-
-  @media (max-width: 1024px) {
-    .gallery { column-count: 2; }
-  }
-
-  @media (max-width: 600px) {
-    .gallery { column-count: 1; }
-  }
-
-  /* ── Pop-out viewer ── */
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    display: none;
+  .hero-placeholder {
+    display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(12, 12, 12, 0.96);
-    padding: clamp(1rem, 4vw, 3rem);
+    width: 100%;
+    height: 100%;
+    padding: 2rem;
+    text-align: center;
+    color: var(--mid);
   }
 
-  .lightbox.open {
-    display: flex;
+  .hero-placeholder p {
+    max-width: 32ch;
+    font-size: 0.95rem;
+    line-height: 1.6;
   }
 
-  .lb-img {
-    max-width: 90vw;
-    max-height: 88vh;
-    object-fit: contain;
-    cursor: default;
+  .hero-placeholder code {
+    font-family: ui-monospace, monospace;
+    background: #f0f0ec;
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
   }
 
-  .lightbox button {
-    position: fixed;
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.65);
-    font-family: var(--font-jp);
-    font-weight: 200;
+  .hero-cta {
+    position: absolute;
+    left: clamp(1.5rem, 5vw, 3rem);
+    bottom: clamp(1.5rem, 5vw, 3rem);
+    padding: 0.9rem 1.8rem;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.72rem;
     letter-spacing: 0.18em;
-    cursor: pointer;
-    transition: color 0.2s ease;
-    padding: 1rem;
-  }
-
-  .lightbox button:hover {
-    color: #fff;
-  }
-
-  .lb-close {
-    top: clamp(0.5rem, 2vw, 1.5rem);
-    right: clamp(0.5rem, 2vw, 1.5rem);
-    font-size: 0.7rem;
     text-transform: uppercase;
+    color: var(--black);
+    background: rgba(255, 255, 255, 0.9);
+    transition: background 0.2s ease;
   }
 
-  .lb-prev,
-  .lb-next {
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.6rem;
+  .hero:hover .hero-cta {
+    background: var(--white);
   }
 
-  .lb-prev { left: clamp(0.25rem, 2vw, 1.5rem); }
-  .lb-next { right: clamp(0.25rem, 2vw, 1.5rem); }
-
-  .lb-counter {
-    position: fixed;
-    bottom: clamp(0.75rem, 2vw, 1.75rem);
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: var(--font-jp);
-    font-weight: 200;
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    color: rgba(255, 255, 255, 0.6);
+  @media (max-width: 768px) {
+    .hero {
+      height: calc(100dvh - var(--bar-h) - 1px);
+    }
   }
 </style>

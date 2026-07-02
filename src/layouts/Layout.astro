@@ -43,16 +43,16 @@ const ogImageUrl = new URL(cleanOgImage, Astro.site).href;
     <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <!-- Fixed left pane: logo on top, nav beneath. Stays put while the page scrolls.
-         Replace the <span> with an <img src="/logo.svg" alt="Dane Wetton" /> when you have artwork. -->
     <aside class="sidebar">
       <a href="/" class="logo" aria-label="Dane Wetton — home">
         <img src="/DaneWetton1.png" alt="Dane Wetton" />
       </a>
 
       <nav class="side-nav">
-        <a href="/" class:list={[{ active: currentPath === '/' }]}>Work</a>
+        <a href="/" class:list={[{ active: currentPath === '/' }]}>Home</a>
+        <a href="/portfolio" class:list={[{ active: currentPath.startsWith('/portfolio') }]}>Portfolio</a>
         <a href="/journal" class:list={[{ active: currentPath.startsWith('/journal') }]}>Journal</a>
+        <a href="/about" class:list={[{ active: currentPath.startsWith('/about') }]}>About</a>
         <a href="/contact" class:list={[{ active: currentPath.startsWith('/contact') }]}>Contact</a>
       </nav>
 
@@ -89,9 +89,6 @@ const ogImageUrl = new URL(cleanOgImage, Astro.site).href;
     --mid: #8a8a8a;
     --border: #e8e8e4;
     --font-sans: 'Archivo', system-ui, -apple-system, sans-serif;
-    /* Legacy aliases so existing page styles keep resolving to the new typeface. */
-    --font-serif: var(--font-sans);
-    --font-jp: var(--font-sans);
     --nav-w: clamp(160px, 16vw, 220px);
     --bar-h: 92px; /* height of the top bar on mobile */
   }
@@ -147,21 +144,6 @@ const ogImageUrl = new URL(cleanOgImage, Astro.site).href;
   .logo img {
     max-height: 56px;
     width: auto;
-  }
-
-  .logo-placeholder {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 120px;
-    height: 48px;
-    border: 1px solid var(--border);
-    font-family: var(--font-sans);
-    font-weight: 700;
-    font-size: 0.72rem;
-    letter-spacing: 0.3em;
-    text-indent: 0.3em;
-    color: var(--black);
   }
 
   /* ── Nav (vertical), sits below the logo inside the pane ── */
@@ -262,14 +244,10 @@ const ogImageUrl = new URL(cleanOgImage, Astro.site).href;
       border-bottom: 1px solid var(--border);
     }
 
-    .logo-placeholder {
-      width: 96px;
-      height: 34px;
-    }
-
     .side-nav {
       flex-direction: row;
-      gap: clamp(1.1rem, 5vw, 2rem);
+      flex-wrap: wrap;
+      gap: clamp(0.9rem, 4vw, 2rem);
       margin-top: 0;
     }
 
