@@ -203,6 +203,12 @@ export const siteSettingsQuery = groq`
     title,
     description,
     siteUrl,
+    homepageImages[] {
+      asset->,
+      alt,
+      crop,
+      hotspot
+    },
     ogImage {
       asset->,
       alt

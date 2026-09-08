@@ -6,6 +6,7 @@ export const siteSettings = defineType({
   type: "document",
   groups: [
     { name: "general", title: "General", default: true },
+    { name: "homepage", title: "Homepage" },
     { name: "seo", title: "SEO" },
     { name: "social", title: "Social" },
   ],
@@ -33,6 +34,33 @@ export const siteSettings = defineType({
       group: "general",
       description: "The full URL of your website (e.g., https://example.com)",
       validation: (Rule) => Rule.required(),
+    }),
+
+    // Homepage
+    defineField({
+      name: "homepageImages",
+      title: "Homepage Photographs",
+      type: "array",
+      group: "homepage",
+      description:
+        "Choose the photographs for the homepage and drag them into the order you want.",
+      of: [
+        {
+          type: "image",
+          options: {
+            hotspot: true,
+          },
+          fields: [
+            defineField({
+              name: "alt",
+              title: "Alternative Text",
+              type: "string",
+              description: "A short description of the photograph.",
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+        },
+      ],
     }),
 
     // SEO

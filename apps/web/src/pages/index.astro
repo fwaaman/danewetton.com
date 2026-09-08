@@ -1,35 +1,21 @@
 ---
 // Fundations
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Text from "@/components/fundations/elements/Text.astro";
 import Wrapper from "@/components/fundations/containers/Wrapper.astro";
 // Components
-import GalleryCard from "@/components/gallery/GalleryCard.astro";
+import HomepageSlideshow from "@/components/home/HomepageSlideshow.astro";
 // Content
-import { getCollection } from "astro:content";
-const allGallery = await getCollection("gallery");
+import { sanityFetch, siteSettingsQuery } from "@/lib/sanity";
+import type { SiteSettings } from "@/lib/sanity";
+
+const settings = await sanityFetch<SiteSettings | null>(siteSettingsQuery);
+const homepageImages = settings?.homepageImages ?? [];
 ---
 
 <BaseLayout>
   <section>
     <Wrapper variant="standard" class="pb-24">
-      <div class="bg-base-100 p-8 lg:px-24 lg:py-18">
-        <video
-          autoplay
-          muted
-          loop
-          playsinline
-          class="w-full aspect-16/7 object-center"
-        >
-          <source src="/video/photoshoot.mp4" type="video/mp4" />
-        </video>
-      </div>
-
-      <div
-        class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-y-24 gap-24"
-      >
-        {allGallery.map((post) => <GalleryCard post={post} />)}
-      </div>
+      {homepageImages.length > 0 && <HomepageSlideshow images={homepageImages} />}
     </Wrapper>
   </section>
 </BaseLayout>

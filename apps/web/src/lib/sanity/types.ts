@@ -191,6 +191,7 @@ export interface SiteSettings {
   title?: string;
   description?: string;
   siteUrl?: string;
+  homepageImages?: SanityImage[];
   ogImage?: SanityImage;
   twitterHandle?: string;
   navigation?: Array<{
