@@ -67,7 +67,7 @@ import type {
  * - false (default): Use Astro Content Collections (works without Sanity)
  * - true: Use Sanity CMS (requires SANITY_PROJECT_ID)
  */
-export const USE_SANITY = false;
+export const USE_SANITY = true;
 
 // =============================================================================
 // POSTS

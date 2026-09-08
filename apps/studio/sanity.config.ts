@@ -8,7 +8,7 @@ export default defineConfig({
   name: "lexington-starter",
   title: "Lexington Starter",
 
-  projectId: import.meta.env.SANITY_STUDIO_PROJECT_ID || "",
+  projectId: import.meta.env.SANITY_STUDIO_PROJECT_ID || "c0y5atfc",
   dataset: import.meta.env.SANITY_STUDIO_DATASET || "production",
 
   plugins: [structureTool({ structure }), visionTool()],
