@@ -1,0 +1,28 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+---
+
+<BaseLayout
+  seo={{
+    title: "Contact | Dane Wetton",
+    description: "Contact Dane Wetton about photography and commissioned work.",
+  }}
+>
+  <section>
+    <Wrapper variant="standard" class="py-24 lg:pt-48">
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-4">
+        <Text tag="h1" variant="textBase" class="font-medium text-base-900">
+          Contact
+        </Text>
+        <div class="lg:col-start-3 lg:col-span-2 max-w-sm">
+          <Text tag="p" variant="textSM" class="text-base-600">
+            For commissions, collaborations, print enquiries, or a conversation
+            about cameras. Contact details will be added here shortly.
+          </Text>
+        </div>
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>
