@@ -1,0 +1,140 @@
+---
+const {
+  variant,
+  size,
+  onlyIconSize,
+  iconOnly = false,
+  gap,
+  isLink = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+// Variants
+const defaultClass = [
+  "bg-black",
+  "text-white",
+  "focus:ring-black",
+  "hover:bg-base-700",
+];
+const accentClass = [
+  "text-white",
+  "bg-accent-500",
+  "hover:bg-accent-600",
+  "focus:ring-accent-600",
+];
+const mutedClass = [
+  "text-black",
+  "bg-base-200",
+  "hover:text-black",
+  "focus:ring-black",
+];
+
+const sizes = {
+  xxs: ["h-7.5", "px-4", "py-2", "text-xs"],
+  xs: ["h-8", "px-4", "py-3", "text-xs"],
+  sm: ["h-9", "px-4", "py-3", "text-sm"],
+  base: ["h-10", "px-5", "py-4", "text-sm"],
+  md: ["h-11", "px-5", "py-4", "text-base"],
+  lg: ["h-12", "px-5", "py-4", "text-lg"],
+  xl: ["h-13", "px-5", "py-4", "text-lg"],
+};
+// Icon size
+const iconSizes = {
+  xxs: ["size-7.5", "py-2", "text-xs"],
+  xs: ["size-8", "text-xs"],
+  sm: ["size-9", "text-sm"],
+  base: ["size-10", "text-sm"],
+  md: ["size-11", "text-base"],
+  lg: ["size-12", "text-lg"],
+  xl: ["size-13", "text-lg"],
+};
+
+// Gaps
+const gapMap = {
+  xs: ["gap-2"],
+  sm: ["gap-4"],
+  base: ["gap-8"],
+  md: ["gap-10"],
+  lg: ["gap-12"],
+};
+
+const variantClass = {
+  default: defaultClass,
+  accent: accentClass,
+  muted: mutedClass,
+  none: [],
+};
+
+const resolvedIconOnly = iconOnly || Boolean(onlyIconSize);
+const resolvedSizeKey = resolvedIconOnly && onlyIconSize ? onlyIconSize : size;
+
+const sizeClass = resolvedIconOnly
+  ? iconSizes[resolvedSizeKey] || []
+  : sizes[resolvedSizeKey] || [];
+
+const gapClass = !resolvedIconOnly && gap ? gapMap[gap] || [] : [];
+
+const additionalClasses = className ? className.split(" ") : [];
+const baseClass = [
+  "flex",
+  "transition",
+  "rounded-full",
+  "text-center",
+  "justify-center",
+  "items-center",
+  "duration-300",
+  "focus:ring-2",
+  "focus:outline-none",
+  "focus:ring-offset-2",
+];
+
+const { href, ...restProps } = rest;
+---
+
+{
+  isLink ? (
+    <a
+      href={href}
+      class:list={[
+        ...baseClass,
+        ...(variantClass[variant] || []),
+        ...sizeClass,
+        ...gapClass,
+        ...additionalClasses,
+      ]}
+      {...restProps}
+    >
+      {resolvedIconOnly ? (
+        <slot name="icon" />
+      ) : (
+        <>
+          <slot name="left-icon" />
+          <slot />
+          <slot name="right-icon" />
+        </>
+      )}
+    </a>
+  ) : (
+    <button
+      class:list={[
+        ...baseClass,
+        ...(variantClass[variant] || []),
+        ...sizeClass,
+        ...gapClass,
+        ...additionalClasses,
+      ]}
+      {...restProps}
+    >
+      {resolvedIconOnly ? (
+        <slot name="icon" />
+      ) : (
+        <>
+          <slot name="left-icon" />
+          <slot />
+          <slot name="right-icon" />
+        </>
+      )}
+    </button>
+  )
+}

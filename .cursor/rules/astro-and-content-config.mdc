@@ -1,0 +1,15 @@
+---
+description: Coordinated changes — astro.config.mjs and src/content.config.ts only when necessary
+globs:
+  - astro.config.*
+  - src/content.config.ts
+alwaysApply: false
+---
+
+# Astro config & content config
+
+- **`astro.config.mjs`:** defines `site` (canonical URL for sitemap/RSS), Tailwind via `@tailwindcss/vite`, `markdown` / `shikiConfig`, and integrations **`@astrojs/sitemap`** + **`@astrojs/mdx`**. Do not add integrations that are not in `package.json`.
+- Changing **`site`** affects `context.site` in `src/pages/rss.xml.js` and sitemap output — coordinate with hardcoded URLs in `src/components/fundations/head/Seo.astro` if you care about SEO consistency.
+- **`src/content.config.ts`:** adding/removing collections or changing `loader` `base`/`pattern` requires new or moved folders under `src/content/` and matching updates under `src/pages/`.
+- **`image()` in schemas** ties into Astro’s asset pipeline; coordinate with any page using `astro:assets` and with frontmatter paths under `src/images/` (or other resolvable locations).
+- Edit these two files **only when needed** for the task; prefer localized page/component changes when possible.

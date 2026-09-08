@@ -1,38 +1,16 @@
 ---
-import Layout from '../layouts/Layout.astro';
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
 ---
 
-<Layout title="Page not found" description="The page you're looking for doesn't exist.">
-  <section class="page-heading">
-    <h1>404</h1>
-    <p>This page doesn't exist or has moved. Head back to the portfolio, or browse the journal.</p>
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="py-24 lg:pt-48 text-center items-center justify-center flex flex-col h-full ">
+      <Text tag="h1" variant="textBase" class="font-medium text-base-900">
+        404 Page not found
+      </Text>
+    </Wrapper>
   </section>
-
-  <nav class="notfound-links">
-    <a href="/portfolio">View portfolio</a>
-    <a href="/journal">Read the journal</a>
-  </nav>
-</Layout>
-
-<style>
-  .notfound-links {
-    display: flex;
-    gap: 2rem;
-    padding: 2.5rem clamp(1.5rem, 5vw, 4rem) 6rem;
-  }
-
-  .notfound-links a {
-    font-weight: 500;
-    font-size: 0.72rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--mid);
-    border-bottom: 1px solid transparent;
-    transition: color 0.2s ease, border-color 0.2s ease;
-  }
-
-  .notfound-links a:hover {
-    color: var(--black);
-    border-color: var(--black);
-  }
-</style>
+</BaseLayout>

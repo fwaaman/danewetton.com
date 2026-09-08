@@ -1,0 +1,69 @@
+---
+// Assets
+import { Image } from "astro:assets";
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+const { frontmatter } = Astro.props;
+---
+
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="py-24 lg:pt-48 space-y-12">
+      <div class="grid grid-cols-1 md:grid-cols-2">
+        <div class="w-full max-w-xs lg:sticky lg:top-24 lg:self-start">
+          <Text tag="p" variant="textXS" class="mt-2 text-base-600">
+            {frontmatter.category}
+          </Text>
+          <Text
+            tag="h1"
+            variant="textBase"
+            class="mt-8 font-medium text-base-900"
+          >
+            {frontmatter.title}
+          </Text>
+          <Text
+            tag="p"
+            variant="textSM"
+            class="mt-2 italic tracking-tighter text-base-600"
+          >
+            {frontmatter.description}
+          </Text>
+        </div>
+        <div class="flex flex-col gap-4">
+          {
+            frontmatter.thumbnail && (
+              <Image
+                src={frontmatter.thumbnail.url}
+                alt={frontmatter.thumbnail.alt}
+                width={800}
+                height={800}
+                loading="lazy"
+                decoding="async"
+                class="object-cover w-full h-auto "
+              />
+            )
+          }
+          {
+            frontmatter.images && frontmatter.images.length > 0 && (
+              <div class="flex flex-col gap-4">
+                {frontmatter.images.map((img) => (
+                  <Image
+                    src={img.url}
+                    alt={img.alt}
+                    width={800}
+                    height={800}
+                    loading="lazy"
+                    decoding="async"
+                    class="object-cover w-full h-auto "
+                  />
+                ))}
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>

@@ -1,0 +1,20 @@
+---
+description: Content collections — Zod schemas, frontmatter, image() fields for Riflesso
+globs:
+  - src/content/**/*
+alwaysApply: false
+---
+
+# Content (`src/content/**`)
+
+- Schemas live in **`src/content.config.ts`**. Collection **names** (`team`, `store`, `gallery`, `posts`, `legal`) are what `getCollection()`/`getEntry()` use; **`legal`** content files live under **`src/content/infopages/`** on disk.
+- **`posts`** require `team` to be the **string id** of a team entry (e.g. `david-lee` for `david-lee.md`). Changing this field’s meaning breaks `BlogLayout.astro`.
+- Use existing entries as copy-paste templates:
+  - Team: `src/content/team/david-lee.md`
+  - Store: `src/content/store/1.md`
+  - Gallery: `src/content/gallery/1.md`
+  - Blog: `src/content/posts/1.md`
+  - Legal: `src/content/infopages/privacy.md`
+- **Do not break `image()`:** keep `image: { url, alt }`, `thumbnail: { url, alt }`, and array shapes (`images` for store/gallery) aligned with the Zod schema. Components pass these into `astro:assets` `Image`.
+- Avoid adding required frontmatter keys without updating all Markdown files and consuming Astro pages.
+- There is **no** changelog collection in this repo — only the README link to Lexington’s external changelog.

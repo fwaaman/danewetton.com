@@ -1,87 +1,35 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-
-const homeEntries = await getCollection('home');
-const home = homeEntries[0]?.data;
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Components
+import GalleryCard from "@/components/gallery/GalleryCard.astro";
+// Content
+import { getCollection } from "astro:content";
+const allGallery = await getCollection("gallery");
 ---
 
-<Layout title="Dane Wetton" description="Photography portfolio of Dane Wetton">
-  <a href="/portfolio" class="hero" aria-label="View the portfolio">
-    {home?.heroImage ? (
-      <Image src={home.heroImage} alt={home.heroAlt || ''} class="hero-img" widths={[640, 1024, 1600, 2400]} sizes="100vw" priority />
-    ) : (
-      <div class="hero-placeholder">
-        <p>TODO: add a hero photo from <code>/admin</code> (Home collection).</p>
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="pb-24">
+      <div class="bg-base-100 p-8 lg:px-24 lg:py-18">
+        <video
+          autoplay
+          muted
+          loop
+          playsinline
+          class="w-full aspect-16/7 object-center"
+        >
+          <source src="/video/photoshoot.mp4" type="video/mp4" />
+        </video>
       </div>
-    )}
-    <span class="hero-cta">View Portfolio</span>
-  </a>
-</Layout>
 
-<style>
-  .hero {
-    position: relative;
-    display: block;
-    width: 100%;
-    height: calc(100dvh - 1px);
-    overflow: hidden;
-    background: var(--border);
-  }
-
-  .hero-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .hero-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    padding: 2rem;
-    text-align: center;
-    color: var(--mid);
-  }
-
-  .hero-placeholder p {
-    max-width: 32ch;
-    font-size: 0.95rem;
-    line-height: 1.6;
-  }
-
-  .hero-placeholder code {
-    font-family: ui-monospace, monospace;
-    background: #f0f0ec;
-    padding: 0.15em 0.4em;
-    border-radius: 3px;
-  }
-
-  .hero-cta {
-    position: absolute;
-    left: clamp(1.5rem, 5vw, 3rem);
-    bottom: clamp(1.5rem, 5vw, 3rem);
-    padding: 0.9rem 1.8rem;
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--black);
-    background: rgba(255, 255, 255, 0.9);
-    transition: background 0.2s ease;
-  }
-
-  .hero:hover .hero-cta {
-    background: var(--white);
-  }
-
-  @media (max-width: 768px) {
-    .hero {
-      height: calc(100dvh - var(--bar-h) - 1px);
-    }
-  }
-</style>
+      <div
+        class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-y-24 gap-24"
+      >
+        {allGallery.map((post) => <GalleryCard post={post} />)}
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>

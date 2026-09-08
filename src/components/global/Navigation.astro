@@ -1,0 +1,171 @@
+---
+// Assets
+import Logo from "@/components/assets/Logo.astro";
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// components
+import Search from "@/components/global/Search.astro";
+// Navigation links
+const navLinks = [
+  {
+    text: "Blog",
+    href: "/blog",
+  },
+  {
+    text: "Store",
+    href: "/store",
+  },
+  {
+    text: "Links",
+    href: "/system/link",
+  },
+  {
+    text: "Buttons",
+    href: "/system/buttons",
+  },
+  {
+    text: "Colors",
+    href: "/system/colors",
+  },
+  {
+    text: "Overview",
+    href: "/system/overview",
+    classes: "hover:text-black duration-300",
+  },
+  {
+    text: "Typography",
+    href: "/system/typography",
+  },
+];
+---
+
+<style>
+  .overflow-hidden-no-shift {
+    overflow: hidden;
+    padding-right: calc(100vw - 100%);
+  }
+</style>
+<header>
+  <Wrapper variant="standard" class="bg-white">
+    <div class="py-4">
+      <div class="flex flex-row items-center justify-between w-full">
+        <a href="/"><Logo class="text-base-900" /></a>
+        <div
+          class="flex items-center gap-4 text-xs uppercase font-medium text-base-900"
+        >
+          <a
+            href="https://lexingtonthemes.com/templates/riflesso"
+            class="hover:text-base-600"
+          >
+            Buy Riflesso
+          </a>
+          <Search />
+          <div class="relative">
+            <button
+              type="button"
+              id="menuToggle"
+              id="menubutton"
+              aria-controls="menu"
+              aria-expanded="false"
+              aria-label="Toggle menu"
+              class="duration-300 uppercase font-medium text-base-900 hover:text-base-600 text-xs focus:outline-none"
+            >
+              Menu
+            </button>
+            <div
+              id="menuContent"
+              class="fixed inset-0 opacity-0 h-full flex flex-col pointer-events-none transition-opacity duration-300 ease-in-out z-9999 bg-white"
+            >
+              <div
+                class="relative h-full flex flex-col justify-between px-4 py-5"
+              >
+                <div>
+                  <button
+                    id="closeMenu"
+                    class="duration-300 uppercase font-medium text-base-900 hover:text-base-600 text-xs ml-auto flex focus:outline-none"
+                  >
+                    Close
+                  </button>
+                  <nav role="navigation" class="flex flex-col gap-2 mt-8">
+                    {
+                      navLinks.map((link) => (
+                        <Text
+                          tag="a"
+                          variant="display2XL"
+                          href={link.href}
+                          title={link.text}
+                          aria-label={link.text}
+                          class="font-semibold uppercase text-base-900 hover:text-base-600 duration-300 tracking-tight"
+                        >
+                          {link.text}
+                        </Text>
+                      ))
+                    }
+                  </nav>
+                </div>
+                <address
+                  class="not-italic text-xs text-base-900 uppercase mt-12"
+                >
+                  123 Fake Street, Springfield, Illinois —
+                  <span
+                    >Tel: <a href="#_" class="hover:underline">+123 456 7890</a
+                    ></span
+                  > — <a
+                    href="mailto:example@example.com"
+                    class="hover:underline">Contact us</a
+                  >
+                </address>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Wrapper>
+</header>
+<script type="module">
+  // Wait for the DOM content to fully load before executing the script
+  document.addEventListener("DOMContentLoaded", (event) => {
+    // Get references to the menu toggle button, menu content, and close button
+    const menuToggle = document.getElementById("menuToggle");
+    const menuContent = document.getElementById("menuContent");
+    const closeMenu = document.getElementById("closeMenu");
+    // Function to toggle the visibility of the menu
+    function toggleMenu() {
+      // Check if the menu is currently closed (based on the presence of a specific class)
+      const isOpening = menuContent.classList.contains("opacity-0");
+      // Toggle classes to show/hide the menu
+      menuContent.classList.toggle("opacity-0"); // Controls the opacity of the menu
+      menuContent.classList.toggle("pointer-events-none"); // Toggles pointer event handling for the menu
+      document.body.classList.toggle("overflow-hidden-no-shift"); // Toggles overflow behavior for the body element
+      // If the menu is opening, reset and animate its links
+      if (isOpening) {
+        setTimeout(() => resetAndAnimateLinks(), 10); // Delay to ensure animations are applied correctly
+      }
+    }
+    // Function to reset and apply animations to the navigation links
+    function resetAndAnimateLinks() {
+      // Select all anchor links inside the navigation
+      const navLinks = document.querySelectorAll("nav a");
+      // Loop through each link to reset its styles and apply animations
+      navLinks.forEach((link, index) => {
+        // Reset the opacity and position of each link to an initial state
+        link.style.opacity = "0";
+        link.style.transform = "translateY(20px)";
+        link.style.transition = "none"; // Remove any pre-existing transitions
+        // Apply a delayed animation to each link
+        setTimeout(() => {
+          // Set transition styles for opacity and position, with a delay based on the index
+          link.style.transition = `opacity 0.3s ease-out ${index * 0.1}s, transform 0.3s ease-out ${index * 0.1}s`;
+          link.style.opacity = "1"; // Fade the link in
+          link.style.transform = "translateY(0)"; // Move the link back to its original position
+        }, 50);
+      });
+    }
+    // Attach the toggleMenu function to the menu toggle button's click event
+    menuToggle.addEventListener("click", toggleMenu);
+    // Attach the toggleMenu function to the close button's click event
+    closeMenu.addEventListener("click", toggleMenu);
+  });
+</script>

@@ -1,10 +1,25 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite';
+import sitemap from "@astrojs/sitemap";
+import mdx from "@astrojs/mdx";
+
 
 // https://astro.build/config
 export default defineConfig({
-  // Your live domain — used for canonical URLs, Open Graph tags, and the sitemap.
-  site: 'https://danewetton.com',
-  integrations: [sitemap()],
+  vite: {
+    plugins: [tailwindcss()],
+  },
+  markdown: {
+    drafts: true,
+    shikiConfig: {
+      theme: "github-light",
+    }
+  },
+  shikiConfig: {
+    wrap: true,
+    skipInline: false,
+    drafts: true
+  },
+  site: 'https://yoursite.com',
+  integrations: [ sitemap(), mdx()]
 });

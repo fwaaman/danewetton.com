@@ -1,0 +1,120 @@
+---
+// Assets
+import { Image } from "astro:assets";
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Sections
+import BlogCard from "@/components/blog/BlogCard.astro";
+const { frontmatter } = Astro.props;
+import { getEntry } from "astro:content";
+const team = await getEntry("team", frontmatter.team);
+// Get all posts and filter by tag
+import { getCollection } from "astro:content";
+const allPosts = await getCollection("posts");
+const relatedPosts = allPosts.filter((post) =>
+  post.data.tags.some((tag) => frontmatter.tags.includes(tag))
+);
+---
+
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="py-24 lg:pt-48">
+      <div class="flex items-end justify-between w-full">
+        <div>
+          {
+            frontmatter.tags.map((tag) => (
+              <a
+                class="block w-full text-sm capitalize text-base-600  hover:text-base-900"
+                href={`/blog/tags/${tag}`}
+              >
+                {tag}
+              </a>
+            ))
+          }
+          <Text
+            tag="h1"
+            variant="textBase"
+            class="mt-2 font-medium text-base-900"
+          >
+            {frontmatter.title}</Text
+          >
+        </div>
+        <div>
+          {
+            team && (
+              <div class="relative ">
+                <a href={`/team/${team.id}`} class="absolute inset-0 z-10" />
+
+                <div>
+                  <Text tag="p" variant="textSM" class="text-base-600 ">
+                    <span>
+                      Written in
+                      <span class="font-medium  text-base-600">
+                        <time
+                          datetime={new Date(frontmatter.pubDate).toISOString()}
+                        >
+                          {new Date(frontmatter.pubDate).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "2-digit",
+                            }
+                          )}
+                        </time>
+                      </span>
+                    </span>
+                    <span>
+                      by
+                      <span class="font-medium text-base-600 ">
+                        {team.data.name}
+                      </span>
+                    </span>
+                  </Text>
+                </div>
+              </div>
+            )
+          }
+        </div>
+      </div>
+
+      <Image
+        width={1400}
+        height={1400}
+        src={frontmatter.image.url}
+        alt={frontmatter.image.alt}
+        class="object-cover object-center mt-4 size-full lg:max-h-200"
+      />
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <Text
+          tag="h2"
+          variant="textSM"
+          class="max-w-sm ml-auto tracking-tighter text-base-600 lg:order-last"
+        >
+          <em>{frontmatter.description}</em>
+        </Text>
+        <Wrapper variant="prose" class="max-w-xl lg:col-span-2"
+          ><slot /></Wrapper
+        >
+      </div>
+    </Wrapper>
+  </section>
+  {
+    relatedPosts.length > 0 && (
+      <section>
+        <Wrapper variant="standard" class="py-8">
+          <Text tag="h2" variant="textBase" class="font-medium text-base-900 ">
+            Related posts
+          </Text>
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-y-24 gap-4">
+            {relatedPosts.slice(0, 3).map((post) => (
+              <BlogCard post={post} />
+            ))}
+          </div>
+        </Wrapper>
+      </section>
+    )
+  }
+</BaseLayout>

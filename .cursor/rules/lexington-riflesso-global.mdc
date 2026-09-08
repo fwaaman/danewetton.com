@@ -1,0 +1,14 @@
+---
+description: Global conventions for the Riflesso Lexington Astro theme — imports, fundations folder, minimal diffs
+alwaysApply: true
+---
+
+# Riflesso (Lexington Themes) — global rules
+
+- Use the existing **`@/` → `src/`** path alias for imports (`tsconfig.json`). Prefer the same import style as neighboring files (`@/layouts/...`, `@/components/...`).
+- **Never rename** `src/components/fundations/` — the folder name is intentional (`fundations`, not `foundations`). All head, layout primitives, and UI atoms live there.
+- **Dependencies:** only use what appears in `package.json`. This theme uses Astro 6, Tailwind 4 via Vite, MDX, RSS, Sitemap, and `@lexingtonthemes/seo` — do not assume React, Vue, or extra integrations.
+- **Change discipline:** keep edits minimal and consistent with existing patterns (Lexington `Wrapper`, `Text`, `BaseLayout`, content `getCollection` / `render`).
+- **Content schemas:** treat `src/content.config.ts` as the source of truth; if you change fields, update every consumer (layouts under `src/layouts/`, pages under `src/pages/`, cards under `src/components/**`).
+- **Images in content:** frontmatter uses the Content Layer `image()` helper — preserve `url`/`alt` shapes and valid resolvable paths (this repo uses `/src/images/...` in Markdown).
+- **Branding / legal:** publisher is Lexington Themes; theme-specific links belong in `README.md` and `AGENTS.md` — do not invent product URLs.

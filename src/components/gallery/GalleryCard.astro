@@ -1,0 +1,23 @@
+---
+// Assets
+import { Image } from "astro:assets";
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+// Content
+const { title, url, thumbnail } = {
+  url: "/gallery/posts/" + Astro.props.post.id,
+  title: Astro.props.post.data.title,
+  thumbnail: Astro.props.post.data.thumbnail.url,
+};
+---
+
+<article class="relative">
+  <a href={url} title={title} class="absolute inset-0 z-10"> </a>
+  <Image src={thumbnail} alt={title} width={1000} height={100} class="size-full aspect-auto" />
+  <Text
+    tag="h3"
+    variant="textSM"
+    class="mt-2 font-medium tracking-tight text-black duration-300"
+    >{title}</Text
+  >
+</article>

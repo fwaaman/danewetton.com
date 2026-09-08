@@ -1,55 +1,118 @@
-import { defineCollection, z } from 'astro:content';
-import { glob, file } from 'astro/loaders';
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
-const journal = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/journal' }),
+const team = defineCollection({
+  loader: glob({ base: "./src/content/team", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
+      name: z.string(),
+      role: z.string().optional(),
+      bio: z.string().optional(),
+      image: z.object({
+        url: image(),
+        alt: z.string(),
+      }),
+      socials: z
+        .object({
+          twitter: z.string().optional(),
+          website: z.string().optional(),
+          linkedin: z.string().optional(),
+          email: z.string().optional(),
+        })
+        .optional(),
+    }),
+});
+
+const store = defineCollection({
+  loader: glob({ base: "./src/content/store", pattern: "**/*.{md,mdx}" }),
+  schema: ({ image }) =>
+    z.object({
+      price: z.string(),
       title: z.string(),
-      date: z.coerce.date(),
-      excerpt: z.string().max(200),
-      coverImage: image().optional(),
-      coverAlt: z.string().optional(),
-      tags: z.array(z.string()).default([]),
+      checkout: z.string(),
+      license: z.string(),
+      highlights: z.array(z.string()),
+      specifications: z
+        .array(
+          z.object({
+            name: z.string(),
+            value: z.string(),
+          })
+        )
+        .optional(),
+      description: z.string(),
+      image: z.object({
+        url: image(),
+        alt: z.string(),
+      }),
+      images: z.array(
+        z.object({
+          url: image(),
+          alt: z.string(),
+        })
+      ),
+      faq: z
+        .array(
+          z.object({
+            question: z.string(),
+            answer: z.string(),
+          })
+        )
+        .optional(),
     }),
 });
 
 const gallery = defineCollection({
-  // The JSON file's root is `{ images: [...] }` (matches the Decap CMS "list" field
-  // shape); unwrap it here so each image becomes its own collection entry.
-  loader: file('./src/content/gallery/gallery.json', {
-    parser: (text) => JSON.parse(text).images,
-  }),
+  loader: glob({ base: "./src/content/gallery", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
-      id: z.string(),
-      image: image(),
-      alt: z.string(),
-      caption: z.string().optional(),
+      category: z.string(),
+      title: z.string(),
+      description: z.string(),
+      thumbnail: z.object({
+        url: image(),
+        alt: z.string(),
+      }),
+      images: z
+        .array(
+          z.object({
+            url: image(),
+            alt: z.string(),
+          })
+        )
+        .optional(),
     }),
 });
 
-const home = defineCollection({
-  // The JSON file is a flat object (matches Decap's file-collection field shape);
-  // wrap it under a single "home" key so the file loader can assign it an id.
-  loader: file('./src/content/home/home.json', {
-    parser: (text) => ({ home: JSON.parse(text) }),
-  }),
-  schema: ({ image }) =>
-    z.object({
-      heroImage: image().optional(),
-      heroAlt: z.string().optional(),
-    }),
-});
-
-const about = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/about' }),
+const posts = defineCollection({
+  loader: glob({ base: "./src/content/posts", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),
-      portrait: image().optional(),
-      portraitAlt: z.string().optional(),
+      pubDate: z.coerce.date(),
+      description: z.string(),
+      team: z.string(),
+      image: z.object({
+        url: image(),
+        alt: z.string(),
+      }),
+      tags: z.array(z.string()),
     }),
 });
 
-export const collections = { journal, gallery, home, about };
+const legal = defineCollection({
+  loader: glob({ base: "./src/content/infopages", pattern: "**/*.{md,mdx}" }),
+  schema: z.object({
+    page: z.string(),
+    pubDate: z.coerce.date(),
+  }),
+});
+
+export const collections = {
+  team,
+  store,
+  gallery,
+  legal,
+  posts,
+};
