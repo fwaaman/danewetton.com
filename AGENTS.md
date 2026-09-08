@@ -1,127 +1,172 @@
-# AGENTS.md — Riflesso (Lexington Themes)
+# AGENTS.md — Riflesso (Lexington Themes · Astro + Sanity)
 
-**Riflesso** is a multipage Astro theme aimed at **editorial photography, creative studios, and a small product/store presence**: the home page leads with a hero video and a masonry-style gallery grid; **Magazine** (`/blog`) and **Studio** (`/studio`) carry editorial/marketing copy; **Store** lists product-style entries; **System** routes expose Lexington’s UI reference (colors, typography, buttons, links). The overall fit is **creative / editorial SaaS or portfolio marketing**, not a generic app shell.
+**Riflesso** is a Lexington Themes starter oriented around a **visual portfolio / gallery-led marketing site**: the homepage highlights a hero video and a grid of gallery entries, with supporting **blog**, **team**, **store (product)**, and **legal** sections. Use it as a **multipage marketing / content site** with optional **Sanity CMS** behind the same components.
+
+**Publisher:** [Lexington Themes](https://lexingtonthemes.com/) · **Theme:** [Riflesso template page](https://lexingtonthemes.com/templates/riflesso)
 
 **Design rules:** [.cursor/skills/riflesso-design/SKILL.md](./.cursor/skills/riflesso-design/SKILL.md) - read before creating or changing any UI.  
 
-## Tech stack
+---
 
-From `package.json` and `astro.config.mjs`:
+## Tech stack (from manifests only)
 
-- **Astro** `^6.0.0`
-- **Tailwind CSS** `^4.1.18` via **`@tailwindcss/vite`**
-- Plugins: **`@tailwindcss/forms`**, **`@tailwindcss/typography`**, **`tailwind-scrollbar-hide`**
-- **MDX**: `@astrojs/mdx` `^5.0.0`
-- **RSS**: `@astrojs/rss` `^4.0.17` (`src/pages/rss.xml.js`)
-- **Sitemap**: `@astrojs/sitemap` `^3.7.1`
-- **SEO components**: `@lexingtonthemes/seo` `^0.1.0` (used in `src/components/fundations/head/Seo.astro`)
-- **Content**: `astro:content`, Zod schemas from `astro/zod` in `src/content.config.ts` (no separate `zod` npm dependency)
-- **Path alias**: `@/*` → `src/*` (`tsconfig.json`)
+| Area | Source | What’s in this repo |
+|------|--------|---------------------|
+| **Workspace** | Root `package.json` | `pnpm@9.15.0`; scripts: `dev`, `dev:web`, `dev:studio`, `build`, `build:web`, `build:studio`, `clean`, `migrate`, `seed:all`. Root devDeps: `@sanity/client`, `gray-matter`, `tsx`, `dotenv`. |
+| **Web** | `apps/web/package.json` | `astro@^6.0.0`; `@astrojs/rss`, `@astrojs/sitemap`; `@tailwindcss/vite@^4.x`, `tailwindcss@^4.x`, `@tailwindcss/forms`, `@tailwindcss/typography`, `tailwind-scrollbar-hide`; `@lexingtonthemes/seo`; `@sanity/client`, `@sanity/image-url`; `groq`; `@portabletext/to-html`, `@portabletext/types`; `reading-time` (listed; **no usage under `apps/web/src`** found); `sharp` (devDependency). |
+| **Web config** | `apps/web/astro.config.mjs` | Vite plugin: `@tailwindcss/vite`; integration: `@astrojs/sitemap`; `site: "https://yourwebsite.com"`; `markdown` + top-level `shikiConfig` (Shiki theme `css-variables`, drafts); `experimental.svgo: true`. **No** `@astrojs/mdx` in dependencies or config. |
+| **Studio** | `apps/studio/package.json` | `sanity@^5.16.0`; `react`, `react-dom`, `styled-components`; `@sanity/icons`, `@sanity/vision`. |
+| **Studio config** | `apps/studio/sanity.config.ts` | `structureTool` (custom `structure` from `structure.ts`), `visionTool` only — no other plugins declared. |
 
-Repo package name (npm): `@lexington/rifelsso` (see `package.json`).
+---
 
-## Folder map
+## Monorepo layout (actual paths)
 
-| Area | Path |
+| Path | Role |
 |------|------|
-| Routes | `src/pages/` |
-| Layouts | `src/layouts/` (`BaseLayout`, `BlogLayout`, `GalleryLayout`, `StoreLayout`, `TeamLayout`, `LegalLayout`) |
-| UI | `src/components/` (`global/`, `fundations/`, `blog/`, `gallery/`, `store/`, `team/`, `assets/`) |
-| Collections (Markdown) | `src/content/` (subfolders per collection — see below) |
-| Global styles | `src/styles/global.css` |
-| Processed images (import / `image()`) | `src/images/` (`assets/`, `blog/`, `gallery/`, `store/`, `team/`) |
-| Static public files | `public/` (e.g. `public/video/photoshoot.mp4`, favicon assets referenced in `Favicons.astro`) |
+| `apps/web/src/pages/` | Astro routes |
+| `apps/web/src/layouts/` | `BaseLayout`, `BlogLayout`, `TeamLayout`, `GalleryLayout`, `StoreLayout`, `LegalLayout` |
+| `apps/web/src/components/` | UI including `components/fundations/` (Lexington base primitives — **keep this folder name spelling**) |
+| `apps/web/src/content/` | Markdown for Content Collections (`team/`, `store/`, `gallery/`, `posts/`, `legal/`) |
+| `apps/web/src/content.config.ts` | Collection definitions (Zod + `glob` loaders) |
+| `apps/web/src/styles/global.css` | Tailwind v4 entry (`@import "tailwindcss"`, `@theme` tokens) |
+| `apps/web/src/lib/data.ts` | Unified data API (`USE_SANITY` + collection vs GROQ branches) |
+| `apps/web/src/lib/sanity/` | `client.ts`, `fetch.ts`, `queries.ts`, `transforms.ts`, `types.ts`, `image.ts`, `portableText.ts`, `index.ts` |
+| `apps/web/src/images/` | Local images referenced from frontmatter (`/src/images/...` style paths in samples) |
+| `apps/web/public/` | Static assets (e.g. `video/photoshoot.mp4`) |
+| `apps/studio/schemas/` | Sanity document types + `siteSettings` |
+| `apps/studio/structure.ts` | Studio sidebar structure |
+| `scripts/migrate-to-sanity.ts` | Markdown → Sanity migration / `seed:all` |
+| `scripts/clean.sh` | Invoked by `pnpm clean` |
 
-**`fundations` spelling:** The theme intentionally uses `src/components/fundations/` (not “foundations”). Do not rename it without updating every import.
+`pnpm-workspace.yaml` includes `apps/*` and `packages/*`; **`packages/` is not present** in this checkout.
 
-## Content collections (`src/content.config.ts`)
+---
 
-All collections use `glob` loaders for `**/*.{md,mdx}`. Image fields use the Content Layer **`image()`** helper — use paths Astro can resolve (this repo consistently uses strings like `/src/images/...` in frontmatter).
+## Dual content model
 
-### `team` → `src/content/team/`
+### A) Astro Content Collections — `apps/web/src/content.config.ts`
 
-- **Required:** `name`, `image` (`url` via `image()`, `alt`)
-- **Optional:** `role`, `bio`, `socials` (`twitter`, `website`, `linkedin`, `email` — all optional strings inside `socials`)
-- **Template:** copy structure from `src/content/team/david-lee.md`
+Loader pattern: `glob({ pattern: "**/*.md", base: "./src/content/<name>", generateId: filename without extension })`.
 
-### `store` → `src/content/store/`
+Image fields use the collection `image` helper: `z.object({ url: image(), alt: z.string() })` (and arrays of the same shape where noted). Sample markdown uses **`url` paths under `/src/images/...`**, resolved against files in `apps/web/src/images/`.
 
-- **Required:** `price`, `title`, `checkout`, `license`, `highlights` (string array), `description`, `image` (`url` + `alt`), `images` (array of `{ url: image(), alt }`)
-- **Optional:** `specifications` (`name`/`value` pairs), `faq` (`question`/`answer` pairs)
-- **Template:** `src/content/store/1.md`
+| Collection | Folder | Required Zod fields (and notes) | Copy-this-file sample |
+|------------|--------|--------------------------------|------------------------|
+| `team` | `apps/web/src/content/team/` | `name`, `image.{url,alt}`; optional `role`, `bio`, `socials.{twitter,website,linkedin,email}` | `apps/web/src/content/team/david-lee.md` |
+| `store` | `apps/web/src/content/store/` | `price`, `title`, `checkout`, `license`, `highlights` (array), `description`, `image`, `images` (array); optional `specifications`, `faq` | `apps/web/src/content/store/1.md` |
+| `gallery` | `apps/web/src/content/gallery/` | `category`, `title`, `description`, `thumbnail`; optional `images` array | `apps/web/src/content/gallery/1.md` |
+| `posts` | `apps/web/src/content/posts/` | `title`, `pubDate`, `description`, `team` (string slug), `image`, `tags` | `apps/web/src/content/posts/1.md` |
+| `legal` | `apps/web/src/content/legal/` | `page`, `pubDate`; body is markdown (no image schema on the collection) | `apps/web/src/content/legal/privacy.md` |
 
-### `gallery` → `src/content/gallery/`
+**Not present in this repo:** separate collections for authors, podcast, jobs, or help center (despite older README prose elsewhere).
 
-- **Required:** `category`, `title`, `description`, `thumbnail` (`url` + `alt`)
-- **Optional:** `images` (array of `{ url: image(), alt }`)
-- **Template:** `src/content/gallery/1.md`
+### B) Sanity CMS — `apps/web/src/lib/sanity/` + `apps/web/src/lib/data.ts`
 
-### `posts` (blog) → `src/content/posts/`
+| Sanity `_type` | Schema file | Aligns with collection |
+|----------------|-------------|-------------------------|
+| `post` | `apps/studio/schemas/post.ts` | `posts` |
+| `teamMember` | `apps/studio/schemas/teamMember.ts` | `team` |
+| `gallery` | `apps/studio/schemas/gallery.ts` | `gallery` |
+| `product` | `apps/studio/schemas/product.ts` | `store` |
+| `legalPage` | `apps/studio/schemas/legalPage.ts` | `legal` |
+| `siteSettings` | `apps/studio/schemas/siteSettings.ts` | **No markdown collection** — singleton-style site config in Studio (navigation, footer object, socials, SEO fields). |
 
-- **Required:** `title`, `pubDate` (coerced date), `description`, `team` (**string id** matching a `team` entry, e.g. `david-lee`), `image` (`url` + `alt`), `tags` (string array)
-- **Template:** `src/content/posts/1.md`
+**Unified API:** `apps/web/src/lib/data.ts` exports getters (`getAllPosts`, `getPostBySlug`, team/gallery/product/legal equivalents) that switch on **`USE_SANITY`**. Sanity path: `sanityFetch` + queries in `queries.ts` + `transform*.ts` in `transforms.ts` + types in `types.ts`. Images: `image.ts` (`urlFor`, `getImageUrl`). Portable Text: `portableText.ts` (`portableTextToHtml`, `portableTextToPlainText`). **`siteSettingsQuery`** lives in `queries.ts` and is used by **`apps/web/src/components/fundations/head/Seo.astro`** (not wired through `data.ts`).
 
-### `legal` → `src/content/infopages/`
+### Toggle / environment
 
-- **Collection export name:** `legal` (folder on disk: `infopages`)
-- **Required:** `page` (display title string), `pubDate` (coerced date)
-- **Template:** `src/content/infopages/privacy.md`
+- **Content vs Sanity for list/detail data:** `export const USE_SANITY` in **`apps/web/src/lib/data.ts`** (`true` / `false`). README documents this file as the switch; it is **not** an environment variable. *(The migration script prints “set in `.env`” — that message does not match the implementation.)*
+- **`apps/web/.env` (from `.env.example`):** `SANITY_PROJECT_ID`, `SANITY_DATASET`, `SANITY_API_VERSION`; optional `SANITY_READ_TOKEN` (comment: draft/preview).
+- **`apps/studio/.env` (from `.env.example`):** `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_DATASET`.
+- **Collections-only:** No need for Studio or migration to **edit markdown**. You still **instantiate a `@sanity/client` in `client.ts`** using `import.meta.env`; default SEO (`Seo.astro`) **always** calls `sanityFetch(siteSettingsQuery)`, so **production setups should plan for valid Sanity env + a `siteSettings` document** or adjust `Seo.astro` for a non-Sanity fallback.
+- **Sanity mode:** Studio running/deployed, `.env` filled, `USE_SANITY = true`, content published in Sanity.
 
-There is **no** changelog content collection or `/changelog` route in this repo.
+### Seeding / migration
 
-## Routing (content → URL)
+- **`pnpm migrate`** (root) → `tsx scripts/migrate-to-sanity.ts`: reads markdown under `apps/web/src/content/`**, uploads images from `apps/web/src/images/`** per frontmatter paths, creates/updates Sanity documents (`post`, `teamMember`, `gallery`, `product`, `legalPage`). Requires **`SANITY_TOKEN` or `SANITY_WRITE_TOKEN`** plus **`SANITY_PROJECT_ID`** (loaded from `apps/web/.env`). Does **not** seed `siteSettings`.
+- **`pnpm seed:all`** → `SEED_ALL=1` same script: deletes documents per type / id cleanup, waits 3s, then runs the same migration path (see README for the “one per type” intent).
 
-Dynamic routes use **`[...slug].astro`**; slugs are **`entry.id`** derived from the content filename (e.g. `1.md` → id `1`, `david-lee.md` → `david-lee`).
+Other files under `scripts/` (e.g. `verify-sanity-content.ts`, `cleanup-*.ts`) are **not** exposed as root `package.json` scripts; open the file for behavior.
 
-| Collection | Index | Detail |
-|------------|-------|--------|
-| `posts` | `/blog` | `/blog/posts/{id}` |
-| Tags | `/blog/tags` | `/blog/tags/{tag}` (`[tag].astro`, tag from frontmatter) |
-| `store` | `/store` | `/store/{id}` (`trailingSlash: false` in `getStaticPaths`) |
-| `gallery` | `/gallery` | `/gallery/posts/{id}` |
-| `team` | `/team` | `/team/{id}` (`trailingSlash: false`) |
-| `legal` | — | `/legal/{id}` (`trailingSlash: false`; files live in `src/content/infopages/`) |
+---
 
-**Other notable routes:** `/` (home), `/studio`, `/404`, `/rss.xml`, `/system/overview`, `/system/colors`, `/system/typography`, `/system/buttons`, `/system/link`.
+## Routing (from `apps/web/src/pages/`)
 
-Note: `src/pages/system/overview.astro` lists some **example** links (e.g. `/infopages/terms`); actual legal URLs are **`/legal/{slug}`** per `src/pages/legal/[...slug].astro`.
+Use this table; the README “Website Routes” section lists **authors / podcast / jobs / helpcenter** paths that **do not exist** in this tree.
 
-## Customization
+| Pattern | File | Notes |
+|---------|------|--------|
+| `/` | `index.astro` | Gallery-led homepage |
+| `/blog` | `blog/index.astro` | Blog index |
+| `/blog/posts/*` | `blog/posts/[...slug].astro` | Rest slug |
+| `/blog/tags` | `blog/tags/index.astro` | |
+| `/blog/tags/:tag` | `blog/tags/[tag].astro` | Dynamic segment |
+| `/team` | `team/index.astro` | |
+| `/team/*` | `team/[...slug].astro` | Rest slug |
+| `/gallery` | `gallery/index.astro` | |
+| `/gallery/posts/*` | `gallery/posts/[...slug].astro` | Rest slug |
+| `/store` | `store/index.astro` | |
+| `/store/*` | `store/[...slug].astro` | Rest slug |
+| `/legal/*` | `legal/[...slug].astro` | Rest slug |
+| `/system/overview`, `/system/typography`, `/system/link`, `/system/colors`, `/system/buttons` | `system/*.astro` | Internal/system UI |
+| `/studio` | `studio.astro` | |
+| `/rss.xml` | `rss.xml.js` | Uses `@astrojs/rss`; globs `./blog/*.{md,mdx}` from `pages/` (**no such markdown files** beside `.astro` in `pages/blog/`) |
+| 404 | `404.astro` | |
 
-- **Site URL / canonical domain:** `astro.config.mjs` → `site: 'https://yoursite.com'`. Feeds and `@astrojs/sitemap` use this. **`src/pages/rss.xml.js`** passes `context.site` for item links; title/description there are currently static strings—adjust if you rebrand.
-- **Global SEO placeholder:** `src/components/fundations/head/Seo.astro` uses **`AstroSeo`** from `@lexingtonthemes/seo` with example URLs/title; replace with your production domain and per-page data when you wire real metadata.
-- **Brand colors & typography:** `src/styles/global.css` — `@theme` block sets `--font-sans` (Hanken Grotesk) and `--color-accent-*` / `--color-base-*` tokens. **Fonts:** `src/components/fundations/head/Fonts.astro` (Google Fonts link).
-- **Chrome / icons:** `src/components/fundations/head/Favicons.astro` + files under `public/` (as linked there).
-- **Shell layout:** `src/layouts/BaseLayout.astro` imports `global.css`, `BaseHead`, `Navigation`, `Footer`. **Head stack:** `src/components/fundations/head/BaseHead.astro` composes `Seo`, `Meta`, `Fonts`, `Favicons`, `FuseJS` (site search script).
-- **Nav:** `src/components/global/Navigation.astro` (`navLinks` array + overlay menu). **Footer:** `src/components/global/Footer.astro`.
+Dynamic segments: **`[...slug]`** (blog posts, team, store, gallery item, legal), **`[tag]`** (blog tags).
 
-## Commands
+---
 
-Per **`README.md`** (same as `package.json` scripts):
+## Customization (real files)
 
-| Command | Action |
+| Concern | Where |
 |---------|--------|
-| `npm install` | Install dependencies |
-| `npm run dev` | Dev server |
-| `npm run build` | Production build → `./dist/` |
-| `npm run preview` | Preview `./dist/` |
-| `npm run astro ...` | Astro CLI |
+| **Site URL** | `apps/web/astro.config.mjs` → `site`; canonical URLs in `Seo.astro` also use `siteSettings.siteUrl` from Sanity when available |
+| **Global SEO wrapper** | `components/fundations/head/Seo.astro` (`@lexingtonthemes/seo`), `BaseHead.astro`, `Meta.astro`, `Fonts.astro`, `Favicons.astro` |
+| **Colors / type scale** | `src/styles/global.css` (`@theme`, fonts) |
+| **Nav** | `components/global/Navigation.astro` (inline `navLinks`; README’s Studio “navigation” fields are schema-only until wired) |
+| **Footer** | `components/global/Footer.astro` |
+| **Shell** | `layouts/BaseLayout.astro` |
 
-**Requirements (README):** Node.js **18 or 20** (LTS), npm.
+---
+
+## Commands (pnpm)
+
+| Command | Purpose |
+|---------|--------|
+| `pnpm install` | Workspace deps |
+| `pnpm dev` | Parallel `dev` in packages (site + Studio when both define `dev`) |
+| `pnpm dev:web` | Site only (`@lexington/web`) |
+| `pnpm dev:studio` | Studio only |
+| `pnpm build` / `pnpm build:web` / `pnpm build:studio` | Production builds |
+| `pnpm clean` | `scripts/clean.sh` |
+| `pnpm migrate` | Content → Sanity |
+| `pnpm seed:all` | Reset + seed (see README) |
+
+Day-to-day site work is usually **`pnpm dev:web`** from the repo root.
+
+---
 
 ## Guardrails
 
-- **Do not** rename `fundations` without a repo-wide import update.
-- **Do not** widen or rename Zod fields in `src/content.config.ts` without updating **every** layout/page/component that reads `entry.data` (e.g. `BlogLayout` resolves `team` via `getEntry("team", frontmatter.team)` — that key must stay consistent).
-- Keep **`image()`** fields valid; cards and layouts use `astro:assets` `Image` with `post.data.image.url` (or `thumbnail`) and will break if schemas and consuming code diverge.
-- Prefer **minimal diffs** matching existing patterns (path alias `@/`, layout composition, `Wrapper`/`Text` from `fundations`).
+- Do **not** rename **`fundations`** — many imports depend on it.
+- Widening **Zod** collection schemas or **Sanity** schemas without updating **`data.ts`**, **`transforms.ts`**, **`types.ts`**, **`queries.ts`**, and consumers in **`pages/` / `layouts/`** breaks parity.
+- Prefer **one shape** for the unified layer: markdown-normalized fields should match what `transform*.ts` produces.
+- Keep **minimal diffs**; follow existing `@/` path aliases (`tsconfig` `paths`).
 
-## Lexington docs & support (from README)
+---
 
-- Theme: https://lexingtonthemes.com/templates/riflesso  
-- Documentation: https://lexingtonthemes.com/documentation  
-- Changelog (product page): https://lexingtonthemes.com/changelog/riflesso  
-- Support: https://lexingtonthemes.com/legal/support/  
-- Bundle / storefront: https://lexingtonthemes.com  
+## Support & docs (README-aligned)
 
-Publisher: https://lexingtonthemes.com/
+- **Documentation:** https://lexingtonthemes.com/documentation  
+- **Support:** https://lexingtonthemes.com/legal/support/  
+- **Changelog (theme):** https://lexingtonthemes.com/changelog/riflesso  
+
+**Sanity:** README links to [sanity.io/manage](https://sanity.io/manage) and [Sanity Documentation](https://www.sanity.io/docs). Use those for project settings and product docs.
+
+---
+
+## Related repo docs
+
+`README.md` (overview), `SEO.md`, `STARTING-UP.md` — may include prose that predates the current route/collection set; **trust `content.config.ts`, `pages/`, and Studio schemas** for structure.

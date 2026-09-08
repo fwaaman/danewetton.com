@@ -1,0 +1,16 @@
+---
+description: Content collections — Zod schemas, glob loaders, image paths under src/images
+globs:
+  - apps/web/src/content/**/*.md
+  - apps/web/src/content.config.ts
+---
+
+# Astro Content Collections
+
+- **Definition file:** `apps/web/src/content.config.ts` — each collection uses `defineCollection` + `glob({ pattern: "**/*.md", base: "./src/content/<name>", generateId })`.
+- **Collections in repo:** `team`, `store`, `gallery`, `posts`, `legal` only. Do not add authors/podcast/jobs/helpCenter collections without adding matching folders, pages, and Sanity parity.
+- **Images:** cover/thumbnail/product images use `image()` in Zod with `{ url: image(), alt: string }`. Sample content uses URLs like `/src/images/...` pointing at files under `apps/web/src/images/`. Changing path conventions breaks `astro:content` image handling and `scripts/migrate-to-sanity.ts` (which strips `/src/images/` and reads from `src/images/`).
+- **Frontmatter:** required fields are strict — see `AGENTS.md` or the `z.object` for each collection. Optional fields must stay optional unless every consumer is updated.
+- **Legal:** `legal` has no `image` in the schema; body is markdown after frontmatter.
+
+When adding a new entry, copy an existing file in the same folder (e.g. `src/content/posts/1.md`) and adjust slugs/ids (filename = entry id).

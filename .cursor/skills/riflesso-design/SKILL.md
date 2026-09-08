@@ -5,6 +5,9 @@ description: Riflesso's design system - typography, color, spacing, and componen
 
 # Riflesso design system
 
+> This repo is a pnpm monorepo: all paths below are relative to `apps/web/`,
+> and the `@/` alias resolves inside `apps/web/src`.
+
 Riflesso is a photography/portfolio theme where the images are the design: the
 chrome around them is nearly invisible. Understated micro-typography, a
 near-monochrome gray palette, square-edged full-bleed imagery, and huge

@@ -1,0 +1,18 @@
+---
+description: Sanity client, GROQ, transforms, Portable Text — keep in sync with Studio schemas
+globs:
+  - apps/web/src/lib/sanity/**/*
+  - apps/web/src/lib/data.ts
+---
+
+# Sanity data layer (`apps/web/src/lib/sanity`)
+
+- **Entry:** `index.ts` re-exports `client`, `previewClient`, `sanityFetch`, queries, `urlFor` / `getImageUrl`, Portable Text helpers, types, and transforms.
+- **Client:** `client.ts` reads `import.meta.env` (`SANITY_PROJECT_ID`, `SANITY_DATASET`, `SANITY_API_VERSION`, optional `SANITY_READ_TOKEN`).
+- **Queries:** `queries.ts` uses the `groq` package; keep field selections aligned with `apps/studio/schemas/*` and with `transforms.ts` / `types.ts`.
+- **Transforms:** map Sanity shapes to the same normalized types consumed by pages as markdown-backed data from `data.ts`.
+- **Portable Text:** `portableText.ts` + `@portabletext/to-html` — use consistently when rendering rich text from Sanity.
+- **Images:** `@sanity/image-url` via `image.ts`; don’t duplicate URL building ad hoc.
+- **SEO:** `components/fundations/head/Seo.astro` calls `sanityFetch(siteSettingsQuery)` independently of `USE_SANITY` — schema/query changes for `siteSettings` affect every page using `BaseHead`.
+
+When changing a GROQ fragment, update all queries that share the same document shape and adjust transforms/types together.

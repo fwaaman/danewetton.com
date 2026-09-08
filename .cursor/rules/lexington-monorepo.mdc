@@ -1,0 +1,13 @@
+---
+description: Lexington Themes Riflesso monorepo — pnpm workspaces, apps/web vs apps/studio, minimal diffs
+alwaysApply: true
+---
+
+# Lexington — monorepo conventions
+
+- **Package manager:** pnpm (see root `packageManager` / `pnpm-workspace.yaml`). Prefer workspace scripts: `pnpm dev:web`, `pnpm dev:studio`, `pnpm --filter @lexington/web …`, etc.
+- **Apps:** `apps/web` is the Astro site (`@lexington/web`); `apps/studio` is Sanity Studio (`@lexington/studio`). Do not assume a `packages/` directory exists unless it appears in the tree.
+- **Imports (web):** use the existing `@/*` → `src/*` alias from `apps/web/tsconfig.json`; match surrounding import style (quotes, path form).
+- **Spelling:** the shared UI folder is `src/components/fundations/` — do not rename to “foundations”.
+- **Scope:** make the smallest change that satisfies the task; avoid drive-by refactors or unrelated files.
+- **Docs accuracy:** when describing routes or content types, align with `apps/web/src/pages/`, `apps/web/src/content.config.ts`, and `apps/studio/schemas/` — the root README may list sections not present in this repo.

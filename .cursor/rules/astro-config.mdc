@@ -1,0 +1,11 @@
+---
+description: Astro config — site URL, Tailwind Vite plugin, sitemap, Shiki; no invented integrations
+globs:
+  - apps/web/astro.config.*
+---
+
+# `astro.config` (web)
+
+- **File:** `apps/web/astro.config.mjs` defines: `@tailwindcss/vite` in `vite.plugins`, `@astrojs/sitemap` in `integrations`, `site`, `markdown` / `shikiConfig`, and `experimental.svgo`.
+- **Do not document integrations** (e.g. MDX, React, partytown) unless they appear in this file and in `apps/web/package.json`.
+- **Changing `site`:** updates sitemap/canonical base; align with production domain. Default SEO may also use Sanity `siteSettings.siteUrl` in `Seo.astro` when configured.
