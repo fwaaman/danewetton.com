@@ -84,7 +84,7 @@ const navLinks = [
               data-slide
               aria-hidden={index === 0 ? "false" : "true"}
               class:list={[
-                "size-full items-center justify-center lg:justify-start",
+                "size-full items-center justify-center",
                 index === 0 ? "flex" : "hidden",
               ]}
             >
@@ -94,7 +94,7 @@ const navLinks = [
                 width={2400}
                 height={1600}
                 loading={index === 0 ? "eager" : "lazy"}
-                class="h-auto w-auto max-h-[80%] max-w-[80%] object-contain"
+                class="h-auto w-auto max-h-[80%] max-w-[80%] object-contain lg:-translate-x-28"
               />
             </figure>
           ))
