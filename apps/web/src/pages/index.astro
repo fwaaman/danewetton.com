@@ -1,7 +1,6 @@
 ---
 // Fundations
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Wrapper from "@/components/fundations/containers/Wrapper.astro";
 // Components
 import HomepageSlideshow from "@/components/home/HomepageSlideshow.astro";
 // Content
@@ -12,10 +11,6 @@ const settings = await sanityFetch<SiteSettings | null>(siteSettingsQuery);
 const homepageImages = settings?.homepageImages ?? [];
 ---
 
-<BaseLayout>
-  <section>
-    <Wrapper variant="standard" class="pb-24">
-      {homepageImages.length > 0 && <HomepageSlideshow images={homepageImages} />}
-    </Wrapper>
-  </section>
+<BaseLayout hideNavigation hideFooter>
+  {homepageImages.length > 0 && <HomepageSlideshow images={homepageImages} />}
 </BaseLayout>

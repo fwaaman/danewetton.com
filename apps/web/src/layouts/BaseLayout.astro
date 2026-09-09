@@ -19,7 +19,7 @@ interface Props {
   hideFooter?: boolean;
 }
 
-const { seo } = Astro.props;
+const { seo, hideNavigation = false, hideFooter = false } = Astro.props;
 ---
 
 <html lang="en" class="scroll-smooth">
@@ -27,8 +27,8 @@ const { seo } = Astro.props;
     <BaseHead seo={seo} />
   </head>
   <body class="flex flex-col bg-white min-h-svh">
-    <Navigation />
+    {!hideNavigation && <Navigation />}
     <main class="grow"><slot /></main>
-    <Footer />
+    {!hideFooter && <Footer />}
   </body>
 </html>
