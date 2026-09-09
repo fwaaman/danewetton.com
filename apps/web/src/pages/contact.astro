@@ -6,40 +6,32 @@ import Wrapper from "@/components/fundations/containers/Wrapper.astro";
 
 <BaseLayout
   seo={{
-    title: "Contact | Dane Wetton",
+    title: "Contact",
     description: "Contact Dane Wetton about photography and commissioned work.",
   }}
 >
   <section>
-    <Wrapper variant="standard" class="py-24 lg:pt-48">
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-4">
-        <Text tag="h1" variant="textBase" class="font-medium text-base-900">
-          Contact
-        </Text>
-        <nav
-          aria-label="Contact links"
-          class="flex flex-col items-start gap-1 lg:col-start-3 lg:col-span-2"
+    <Wrapper variant="standard" class="pt-12 pb-24">
+      <nav aria-label="Contact links" class="flex flex-col items-start gap-1">
+        <Text
+          tag="a"
+          variant="textSM"
+          href="https://www.instagram.com/danewett/"
+          target="_blank"
+          rel="noreferrer"
+          class="text-base-900 hover:text-base-600 transition duration-300"
         >
-          <Text
-            tag="a"
-            variant="textSM"
-            href="https://www.instagram.com/danewett/"
-            target="_blank"
-            rel="noreferrer"
-            class="text-base-900 hover:text-base-600 transition duration-300"
-          >
-            Instagram
-          </Text>
-          <Text
-            tag="a"
-            variant="textSM"
-            href="mailto:hello@danewetton.com"
-            class="text-base-900 hover:text-base-600 transition duration-300"
-          >
-            Email
-          </Text>
-        </nav>
-      </div>
+          Instagram
+        </Text>
+        <Text
+          tag="a"
+          variant="textSM"
+          href="mailto:hello@danewetton.com"
+          class="text-base-900 hover:text-base-600 transition duration-300"
+        >
+          Email
+        </Text>
+      </nav>
     </Wrapper>
   </section>
 </BaseLayout>
