@@ -83,7 +83,10 @@ const navLinks = [
             <figure
               data-slide
               aria-hidden={index === 0 ? "false" : "true"}
-              class:list={["size-full", index !== 0 && "hidden"]}
+              class:list={[
+                "size-full items-center justify-center lg:justify-start",
+                index === 0 ? "flex" : "hidden",
+              ]}
             >
               <Image
                 src={getImageUrl(image, { width: 2400, quality: 90 })}
@@ -91,7 +94,7 @@ const navLinks = [
                 width={2400}
                 height={1600}
                 loading={index === 0 ? "eager" : "lazy"}
-                class="size-full object-contain object-top lg:object-left"
+                class="h-auto w-auto max-h-[80%] max-w-[80%] object-contain"
               />
             </figure>
           ))
@@ -154,6 +157,7 @@ const navLinks = [
 
       slides.forEach((slide, slideIndex) => {
         const isActive = slideIndex === activeIndex;
+        slide.classList.toggle("flex", isActive);
         slide.classList.toggle("hidden", !isActive);
         slide.setAttribute("aria-hidden", String(!isActive));
       });
