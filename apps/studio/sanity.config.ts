@@ -5,8 +5,8 @@ import { schemaTypes } from "./schemas";
 import { structure } from "./structure";
 
 export default defineConfig({
-  name: "lexington-starter",
-  title: "Lexington Starter",
+  name: "danewetton",
+  title: "Dane Wetton",
 
   projectId: import.meta.env.SANITY_STUDIO_PROJECT_ID || "c0y5atfc",
   dataset: import.meta.env.SANITY_STUDIO_DATASET || "production",
