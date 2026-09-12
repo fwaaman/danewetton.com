@@ -11,6 +11,6 @@ const settings = await sanityFetch<SiteSettings | null>(siteSettingsQuery);
 const homepageImages = settings?.homepageImages ?? [];
 ---
 
-<BaseLayout hideNavigation hideFooter>
+<BaseLayout hideFooter>
   {homepageImages.length > 0 && <HomepageSlideshow images={homepageImages} />}
 </BaseLayout>

@@ -1,8 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import Text from "@/components/fundations/elements/Text.astro";
 import Wrapper from "@/components/fundations/containers/Wrapper.astro";
-import Navigation from "@/components/global/Navigation.astro";
 import { getImageUrl } from "@/lib/sanity";
 import type { SanityImage } from "@/lib/sanity";
 
@@ -12,72 +10,15 @@ interface Props {
 
 const { images } = Astro.props;
 const hasNavigation = images.length > 1;
-const navLinks = [
-  { label: "Journal", href: "/blog" },
-  { label: "Common Life", href: "/common-life" },
-  { label: "Photos", href: "/gallery" },
-  { label: "Contact", href: "/contact" },
-];
 ---
 
-<section data-home-slideshow class="min-h-svh">
-  <div class="lg:hidden">
-    <Navigation />
-  </div>
-
+<section data-home-slideshow class="min-h-[calc(100svh-3.5rem)]">
   <Wrapper
     variant="standard"
-    class="flex min-h-[calc(100svh-3.5rem)] flex-col pb-4 lg:grid lg:min-h-svh lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-4 lg:py-4 2xl:max-w-none"
+    class="flex min-h-[calc(100svh-3.5rem)] flex-col pb-4 2xl:max-w-none"
   >
-    <aside class="hidden flex-col lg:flex">
-      <Text tag="h1" variant="textBase" class="font-medium text-base-900">
-        <a href="/" aria-label="Dane Wetton | Photo — home">
-          Dane Wetton | Photo
-        </a>
-      </Text>
-
-      <nav aria-label="Primary" class="mt-16 flex flex-col items-start gap-2">
-        {
-          navLinks.map((link) => (
-            <Text
-              tag="a"
-              variant="textSM"
-              href={link.href}
-              class="text-base-900 transition duration-300 hover:text-base-600"
-            >
-              {link.label}
-            </Text>
-          ))
-        }
-      </nav>
-
-      {
-        hasNavigation && (
-          <div class="mt-auto flex items-center gap-1 text-xs text-base-900">
-            <button
-              type="button"
-              data-previous
-              class="transition duration-300 hover:text-base-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-base-900"
-              aria-label="Show previous photograph"
-            >
-              prev
-            </button>
-            <span aria-hidden="true">/</span>
-            <button
-              type="button"
-              data-next
-              class="transition duration-300 hover:text-base-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-base-900"
-              aria-label="Show next photograph"
-            >
-              next
-            </button>
-          </div>
-        )
-      }
-    </aside>
-
     <div class="flex min-h-0 flex-1 flex-col">
-      <div class="h-[calc(100svh-7.5rem)] min-h-80 overflow-hidden lg:h-[calc(100svh-2rem)]">
+      <div class="h-[calc(100svh-7.5rem)] min-h-80 overflow-hidden">
         {
           images.map((image, index) => (
             <figure
@@ -94,7 +35,7 @@ const navLinks = [
                 width={2400}
                 height={1600}
                 loading={index === 0 ? "eager" : "lazy"}
-                class="h-auto w-auto max-h-[80%] max-w-[80%] object-contain lg:-translate-x-28"
+                class="h-auto w-auto max-h-[80%] max-w-[80%] object-contain"
               />
             </figure>
           ))
@@ -103,7 +44,7 @@ const navLinks = [
 
       {
         hasNavigation && (
-          <div class="mt-3 flex items-center gap-1 text-xs text-base-900 lg:hidden">
+          <div class="mt-3 flex items-center justify-center gap-1 text-xs text-base-900">
             <button
               type="button"
               data-previous
