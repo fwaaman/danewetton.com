@@ -17,6 +17,6 @@ export default defineConfig({
     skipInline: false,
     drafts: true,
   },
-  site: "https://yourwebsite.com",
+  site: "https://danewetton.com",
   integrations: [sitemap()],
 });
