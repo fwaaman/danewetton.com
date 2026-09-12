@@ -35,34 +35,45 @@ const photos = sourcePhotos.filter((photo) => {
 ---
 
 <BaseLayout
+  hideFooter
   seo={{
     title: "Photos",
     description: "A collection of photographs by Dane Wetton.",
   }}
 >
-  <section>
-    <Wrapper variant="standard" class="py-24 lg:pt-32">
-      <Text tag="h1" variant="textBase" class="font-medium text-base-900">
-        Photos
-      </Text>
+  <div class="flex min-h-[calc(100svh-3.5rem)] flex-col">
+    <section class="flex-1">
+      <Wrapper variant="standard" class="py-24 lg:pt-32">
+        <Text tag="h1" variant="textBase" class="font-medium text-base-900">
+          Photos
+        </Text>
 
-      <div class="mt-4 columns-1 gap-4 sm:columns-2 lg:columns-3">
-        {
-          photos.map((photo, index) => (
-            <figure class="mb-4 break-inside-avoid">
-              <Image
-                src={photo.url}
-                alt={photo.alt}
-                width={1600}
-                height={1600}
-                loading={index < 3 ? "eager" : "lazy"}
-                decoding="async"
-                class="h-auto w-full"
-              />
-            </figure>
-          ))
-        }
-      </div>
-    </Wrapper>
-  </section>
+        <div class="mt-4 columns-1 gap-4 sm:columns-2 lg:columns-3">
+          {
+            photos.map((photo, index) => (
+              <figure class="mb-4 break-inside-avoid">
+                <Image
+                  src={photo.url}
+                  alt={photo.alt}
+                  width={1600}
+                  height={1600}
+                  loading={index < 3 ? "eager" : "lazy"}
+                  decoding="async"
+                  class="h-auto w-full"
+                />
+              </figure>
+            ))
+          }
+        </div>
+      </Wrapper>
+    </section>
+
+    <footer class="mt-auto">
+      <Wrapper variant="standard" class="pb-4">
+        <Text tag="p" variant="textXS" class="text-right text-base-400">
+          © Copyright Dane Wetton. Photos. Cameras. Musings.
+        </Text>
+      </Wrapper>
+    </footer>
+  </div>
 </BaseLayout>
