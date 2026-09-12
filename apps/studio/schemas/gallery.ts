@@ -9,14 +9,19 @@ import { ImagesIcon } from "@sanity/icons";
  */
 export const gallery = defineType({
   name: "gallery",
-  title: "Gallery",
+  title: "Photos Page",
   type: "document",
   icon: ImagesIcon,
+  groups: [
+    { name: "photographs", title: "Photographs", default: true },
+    { name: "details", title: "Details" },
+  ],
   fields: [
     defineField({
       name: "category",
       title: "Category",
       type: "string",
+      group: "details",
       description: "Category or theme of this gallery",
       validation: (Rule) => Rule.required(),
     }),
@@ -24,12 +29,14 @@ export const gallery = defineType({
       name: "title",
       title: "Title",
       type: "string",
+      group: "details",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
+      group: "details",
       options: {
         source: "title",
         maxLength: 96,
@@ -40,14 +47,16 @@ export const gallery = defineType({
       name: "description",
       title: "Description",
       type: "text",
+      group: "details",
       rows: 3,
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "thumbnail",
-      title: "Thumbnail",
+      title: "First Photograph",
       type: "image",
-      description: "Main preview image for the gallery",
+      group: "photographs",
+      description: "The first photograph shown on the Photos page.",
       options: {
         hotspot: true,
       },
@@ -64,9 +73,10 @@ export const gallery = defineType({
     }),
     defineField({
       name: "images",
-      title: "Gallery Images",
+      title: "Additional Photographs",
       type: "array",
-      description: "Additional images in this gallery",
+      group: "photographs",
+      description: "All remaining photographs shown on the Photos page.",
       of: [
         {
           type: "image",

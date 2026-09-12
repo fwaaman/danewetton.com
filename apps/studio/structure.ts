@@ -10,6 +10,7 @@ import {
 
 // Singleton document IDs
 const SITE_SETTINGS_ID = "siteSettings";
+const PHOTOS_PAGE_ID = "ec7a220f-6059-4630-b9b9-637ca7e9f808";
 
 /**
  * Studio Structure
@@ -21,6 +22,32 @@ export const structure = (S: StructureBuilder) =>
   S.list()
     .title("Content")
     .items([
+      // Homepage slideshow (opens the singleton directly)
+      S.listItem()
+        .title("Homepage Photographs")
+        .icon(ImagesIcon)
+        .id("homepagePhotographs")
+        .child(
+          S.document()
+            .schemaType("siteSettings")
+            .documentId(SITE_SETTINGS_ID)
+            .title("Homepage Photographs")
+        ),
+
+      // The single Photos page gallery
+      S.listItem()
+        .title("Photos Page")
+        .icon(ImagesIcon)
+        .id("photosPage")
+        .child(
+          S.document()
+            .schemaType("gallery")
+            .documentId(PHOTOS_PAGE_ID)
+            .title("Photos Page")
+        ),
+
+      S.divider(),
+
       // Blog Posts
       S.listItem()
         .title("Blog Posts")
@@ -34,13 +61,6 @@ export const structure = (S: StructureBuilder) =>
         .icon(UsersIcon)
         .schemaType("teamMember")
         .child(S.documentTypeList("teamMember").title("Team Members")),
-
-      // Gallery
-      S.listItem()
-        .title("Gallery")
-        .icon(ImagesIcon)
-        .schemaType("gallery")
-        .child(S.documentTypeList("gallery").title("Gallery")),
 
       // Store / Products
       S.listItem()
@@ -58,15 +78,15 @@ export const structure = (S: StructureBuilder) =>
 
       S.divider(),
 
-      // Site Settings (singleton)
+      // Other site settings (singleton)
       S.listItem()
-        .title("Site Settings")
+        .title("Other Site Settings")
         .icon(CogIcon)
         .id("siteSettings")
         .child(
           S.document()
             .schemaType("siteSettings")
             .documentId(SITE_SETTINGS_ID)
-            .title("Site Settings")
+            .title("Other Site Settings")
         ),
     ]);

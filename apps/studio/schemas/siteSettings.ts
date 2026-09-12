@@ -5,8 +5,8 @@ export const siteSettings = defineType({
   title: "Site Settings",
   type: "document",
   groups: [
-    { name: "general", title: "General", default: true },
-    { name: "homepage", title: "Homepage" },
+    { name: "homepage", title: "Homepage", default: true },
+    { name: "general", title: "General" },
     { name: "seo", title: "SEO" },
     { name: "social", title: "Social" },
   ],
