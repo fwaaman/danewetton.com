@@ -1,2 +1,5 @@
-<!-- FuseJS: https://fusejs.io/ -->
-<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0"></script>
+<!-- FuseJS: https://fusejs.io/ (bundled locally rather than loaded from a CDN) -->
+<script>
+  import Fuse from "fuse.js";
+  window.Fuse = Fuse;
+</script>
